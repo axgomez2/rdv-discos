@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide elements with x-cloak */
+[x-cloak] {
+    display: none !important;
+}
+
+/* Base styles */
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Transitions */
+.transition-opacity {
+    transition-property: opacity;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transition-transform {
+    transition-property: transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+/* Duration */
+.duration-200 {
+    transition-duration: 200ms;
+}
+
+.duration-300 {
+    transition-duration: 300ms;
+}
+
+/* Timing */
+.ease-in {
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+}
+
+.ease-out {
+    transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+/* Transform */
+.scale-95 {
+    transform: scale(.95);
+}
+
+.scale-100 {
+    transform: scale(1);
+}
+
+.translate-y-0 {
+    transform: translateY(0);
+}
+
+.translate-y-4 {
+    transform: translateY(1rem);
+}
+
+/* Opacity */
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-100 {
+    opacity: 1;
+}
+
+/* Z-index */
+.z-50 {
+    z-index: 50;
+}
+
+/* Components */
+@layer components {
+    .btn-primary {
+        @apply inline-flex justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .btn-secondary {
+        @apply inline-flex justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 bg-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed;
+    }
+
+    .form-input {
+        @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5;
+    }
+
+    .card {
+        @apply bg-white border border-gray-200 rounded-lg shadow-sm;
+    }
+}
+
+/* Animation */
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+/* Modal specific */
+.modal-backdrop {
+    @apply fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity;
+}
+
+.modal-panel {
+    @apply relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg;
+}
+
+.modal-content {
+    @apply bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4;
+}
+
+.modal-footer {
+    @apply bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6;
+}
+
+/* Loading states */
+.loading-overlay {
+    @apply absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center;
+}
+
+.loading-spinner {
+    @apply animate-spin h-5 w-5 text-primary-700;
+}
+
+/* Form elements */
+.form-group {
+    @apply mb-4;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.form-error {
+    @apply mt-1 text-sm text-red-600;
+}
+
+/* Alerts */
+.alert {
+    @apply p-4 mb-4 rounded-lg;
+}
+
+.alert-info {
+    @apply bg-blue-50 text-blue-800;
+}
+
+.alert-success {
+    @apply bg-green-50 text-green-800;
+}
+
+.alert-warning {
+    @apply bg-yellow-50 text-yellow-800;
+}
+
+.alert-error {
+    @apply bg-red-50 text-red-800;
+}
+
+
+@layer components {
+    .vinyl-card-transition {
+      @apply transition-all duration-300 ease-in-out;
+    }
+
+    .vinyl-card-hover {
+      @apply hover:shadow-lg hover:-translate-y-1;
+    }
+  }
