@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('is_encrypted')->default(false);
             $table->timestamps();
-            
+
             $table->unique(['group', 'key']);
         });
     }
