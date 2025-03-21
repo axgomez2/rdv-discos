@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Services\SystemSettingsService;
 
 class MelhorEnvioService
 {
@@ -13,21 +14,57 @@ class MelhorEnvioService
     protected $fromPostalCode;
     protected $fromData;
     protected $config;
+    protected $systemSettings;
+    protected $enabled;
 
-    public function __construct()
+    public function __construct(SystemSettingsService $systemSettings)
     {
-        $this->config = config('melhorenvio');
-        $this->apiToken = $this->config['token'];
-        $this->baseUrl = $this->config['sandbox']
+        $this->systemSettings = $systemSettings;
+        $this->enabled = (bool)$this->systemSettings->get('shipping', 'melhorenvio_enabled', false);
+        $this->apiToken = $this->systemSettings->get('shipping', 'melhorenvio_client_token', '');
+        $this->sandbox = (bool)$this->systemSettings->get('shipping', 'melhorenvio_sandbox', true);
+        
+        // Configuração base
+        $this->baseUrl = $this->sandbox
             ? 'https://sandbox.melhorenvio.com.br/api/v2/'
             : 'https://api.melhorenvio.com.br/v2/';
-
-        $this->fromPostalCode = $this->config['from']['postal_code'];
-        $this->fromData = $this->config['from'];
+        
+        // Configuração dos dados de origem
+        $defaultPostalCode = config('melhorenvio.from.postal_code', '');
+        $this->fromPostalCode = $this->systemSettings->get('shipping', 'melhorenvio_postal_code', $defaultPostalCode);
+        
+        // Dados do remetente
+        $this->fromData = [
+            'postal_code' => $this->fromPostalCode,
+            'address' => $this->systemSettings->get('shipping', 'melhorenvio_address', ''),
+            'number' => $this->systemSettings->get('shipping', 'melhorenvio_number', ''),
+            'complement' => $this->systemSettings->get('shipping', 'melhorenvio_complement', ''),
+            'district' => $this->systemSettings->get('shipping', 'melhorenvio_district', ''),
+            'city' => $this->systemSettings->get('shipping', 'melhorenvio_city', ''),
+            'state' => $this->systemSettings->get('shipping', 'melhorenvio_state', ''),
+            'country' => $this->systemSettings->get('shipping', 'melhorenvio_country', 'BR'),
+        ];
+        
+        // Garantir que as outras configurações sejam carregadas do arquivo de configuração
+        $this->config = config('melhorenvio');
+    }
+    
+    /**
+     * Verifica se o serviço está habilitado
+     * 
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->enabled && !empty($this->apiToken);
     }
 
     public function calculateShipping($cartItems, $toPostalCode)
     {
+        if (!$this->isEnabled()) {
+            return [];
+        }
+
         $cacheKey = "shipping_calc_{$toPostalCode}_" . md5(json_encode($cartItems));
 
         return Cache::remember($cacheKey, now()->addMinutes($this->config['cache_time']), function () use ($cartItems, $toPostalCode) {

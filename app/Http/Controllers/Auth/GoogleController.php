@@ -37,16 +37,31 @@ class GoogleController extends Controller
             $googleUser = Socialite::driver('google')->user();
             Log::info('Dados do usuário Google recebidos', ['email' => $googleUser->email]);
 
-            $user = User::updateOrCreate([
-                'google_id' => $googleUser->id,
-            ], [
-                'name' => $googleUser->name,
-                'email' => $googleUser->email,
-                'google_id' => $googleUser->id,
-                'password' => encrypt('123456dummy')
-            ]);
-
-            Log::info('Usuário criado/atualizado com sucesso', ['user_id' => $user->id]);
+            // Verificar se um usuário com este e-mail já existe
+            $existingUser = User::where('email', $googleUser->email)->first();
+            
+            if ($existingUser) {
+                // Se o usuário existe mas não tem google_id, atualize
+                if (empty($existingUser->google_id)) {
+                    $existingUser->update([
+                        'google_id' => $googleUser->id
+                    ]);
+                }
+                
+                $user = $existingUser;
+                Log::info('Usuário existente atualizado', ['user_id' => $user->id]);
+            } else {
+                // Criar novo usuário
+                $user = User::create([
+                    'name' => $googleUser->name,
+                    'email' => $googleUser->email,
+                    'google_id' => $googleUser->id,
+                    'password' => bcrypt(uniqid(mt_rand(), true)),
+                    'email_verified_at' => now(), // Usuários do Google já vêm com email verificado
+                ]);
+                
+                Log::info('Novo usuário criado', ['user_id' => $user->id]);
+            }
 
             Auth::login($user);
 

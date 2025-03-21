@@ -7,14 +7,42 @@ use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use App\Services\SystemSettingsService;
 
 class PagSeguroService
 {
     protected $pagSeguro;
+    protected $systemSettings;
+    protected $enabled;
 
-    public function __construct()
+    public function __construct(SystemSettingsService $systemSettings)
     {
-        $this->pagSeguro = new PagSeguro();
+        $this->systemSettings = $systemSettings;
+        $this->enabled = (bool)$this->systemSettings->get('payment', 'pagseguro_enabled', false);
+        
+        // Configurar o PagSeguro com base nas configurações do banco de dados
+        $config = [
+            'email' => $this->systemSettings->get('payment', 'pagseguro_email', ''),
+            'token' => $this->systemSettings->get('payment', 'pagseguro_token', ''),
+            'sandbox' => (bool)$this->systemSettings->get('payment', 'pagseguro_sandbox', true),
+        ];
+        
+        if (empty($config['email']) || empty($config['token'])) {
+            Log::warning('PagSeguro: Credenciais não configuradas');
+        } else {
+            // Inicializa o PagSeguro com as configurações do banco de dados
+            $this->pagSeguro = new PagSeguro($config);
+        }
+    }
+    
+    /**
+     * Verifica se o serviço está habilitado
+     * 
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->enabled && $this->pagSeguro !== null;
     }
 
     /**
@@ -24,6 +52,10 @@ class PagSeguroService
      */
     public function getSessionId()
     {
+        if (!$this->isEnabled()) {
+            return null;
+        }
+
         try {
             return $this->pagSeguro->startSession();
         } catch (\Exception $e) {
@@ -41,6 +73,13 @@ class PagSeguroService
      */
     public function processCreditCardPayment(Order $order, array $cardData)
     {
+        if (!$this->isEnabled()) {
+            return [
+                'success' => false,
+                'message' => 'PagSeguro não habilitado',
+            ];
+        }
+
         try {
             $user = $order->user;
             $address = $order->shippingAddress;
@@ -133,6 +172,13 @@ class PagSeguroService
      */
     public function processBoletoPayment(Order $order)
     {
+        if (!$this->isEnabled()) {
+            return [
+                'success' => false,
+                'message' => 'PagSeguro não habilitado',
+            ];
+        }
+
         try {
             $user = $order->user;
             $address = $order->shippingAddress;
@@ -196,6 +242,13 @@ class PagSeguroService
      */
     public function processPixPayment(Order $order)
     {
+        if (!$this->isEnabled()) {
+            return [
+                'success' => false,
+                'message' => 'PagSeguro não habilitado',
+            ];
+        }
+
         try {
             $user = $order->user;
             $address = $order->shippingAddress;
@@ -262,6 +315,10 @@ class PagSeguroService
      */
     public function processNotification(Request $request)
     {
+        if (!$this->isEnabled()) {
+            return false;
+        }
+
         try {
             $response = $this->pagSeguro->notification($request->notificationCode, $request->notificationType);
 

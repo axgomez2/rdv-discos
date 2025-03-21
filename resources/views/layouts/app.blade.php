@@ -11,7 +11,7 @@
     <meta name="author" content="Your Company Name">
     <meta name="robots" content="index, follow">
 
-    <title>@yield('title', 'EMBAIXADA DANCE MUSIC - 30 ANOS DE MERCADO')</title>
+    <title>@yield('title', 'RDV DISCOS - A LOJA MAIS MODERNA DO BRASIL')</title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
@@ -21,8 +21,8 @@
     <!-- Metatags para compartilhamento social -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('og_title', 'A LOJA REFERENCIA EM DISCOS DE DANCE MUSIC.')">
-    <meta property="og:description" content="@yield('og_description', 'Discover and purchase high-quality vinyl records from our extensive collection.')">
+    <meta property="og:title" content="@yield('og_title', 'DISCOS DE VINIL NOVOS E USADOS - RDV DISCOS')">
+    <meta property="og:description" content="@yield('og_description', 'nossa loja foi pensada para oferecer a melhor experiência para amantes de discos de vinil')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
 
 
@@ -88,6 +88,9 @@
         </div>
     </div>
 
+    <!-- Toast Component -->
+    <x-toast />
+
     <div class="bg-white">
         @include('components.site.nav4')
     </div>
@@ -113,7 +116,6 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     <script src="{{ asset('assets/js/audio-player.js') }}" defer></script>
     <script src="{{ asset('assets/js/cart.js') }}"></script>
-    <script src="{{ asset('assets/js/toast.js') }}" type="module"></script>
     <script src="{{ asset('js/wishlist.js') }}"></script>
     <script src="https://unpkg.com/flowbite@1.6.6/dist/flowbite.js"></script>
 
@@ -124,48 +126,38 @@
             window.dispatchEvent(new CustomEvent('open-login-modal'));
         }
 
-        // Função para alternar entre mostrar/ocultar senha
-        function togglePasswordVisibility(inputId) {
-            const passwordInput = document.getElementById(inputId);
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-
-            // Alterar o ícone do olho
-            const icon = event.currentTarget.querySelector('.password-toggle-icon');
-            if (type === 'text') {
-                // Mostrar o ícone de olho tachado quando a senha estiver visível
-                icon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
-                `;
-            } else {
-                // Mostrar o ícone de olho normal quando a senha estiver oculta
-                icon.innerHTML = `
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                `;
-            }
-        }
-
         // Função para gerar uma senha forte
         function generateStrongPassword() {
-            const length = 12; // Comprimento da senha
-            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_-+=<>?";
+            const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+";
             let password = "";
-
-            // Garante que pelo menos um caractere de cada tipo esteja incluído
-            password += charset.match(/[a-z]/)[0]; // Minúscula
-            password += charset.match(/[A-Z]/)[0]; // Maiúscula
-            password += charset.match(/[0-9]/)[0]; // Número
-            password += charset.match(/[^a-zA-Z0-9]/)[0]; // Caractere especial
-
-            // Preenche o resto da senha com caracteres aleatórios
-            for (let i = password.length; i < length; i++) {
+            
+            // Garantir pelo menos 2 números, 2 símbolos e 2 letras maiúsculas
+            // 2 números aleatórios
+            password += "0123456789".charAt(Math.floor(Math.random() * 10));
+            password += "0123456789".charAt(Math.floor(Math.random() * 10));
+            
+            // 2 símbolos aleatórios
+            password += "!@#$%^&*()_+".charAt(Math.floor(Math.random() * 13));
+            password += "!@#$%^&*()_+".charAt(Math.floor(Math.random() * 13));
+            
+            // 2 letras maiúsculas aleatórias
+            password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 26));
+            password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 26));
+            
+            // Completar com mais 6 caracteres aleatórios
+            for (let i = 0; i < 6; i++) {
                 password += charset.charAt(Math.floor(Math.random() * charset.length));
             }
-
-            // Embaralha a senha para torná-la mais aleatória
+            
+            // Embaralhar a senha
             password = password.split('').sort(() => 0.5 - Math.random()).join('');
-
+            
+            return password;
+        }
+        
+        function fillRandomPassword() {
+            const password = generateStrongPassword();
+            
             // Define a senha nos campos correspondentes
             document.getElementById("password").value = password;
             document.getElementById("password_confirmation").value = password;
@@ -217,37 +209,6 @@
                 }
             }, 5000);
         });
-
-        // Função para exibir notificações toast
-        window.showToast = function(message, type = 'success') {
-            Toastify({
-                text: message,
-                duration: 3000,
-                close: true,
-                gravity: "top",
-                position: "right",
-                stopOnFocus: true,
-                className: type === 'error' ? 'bg-red-600' : 'bg-green-600',
-                style: {
-                    background: type === 'error' ? '#dc2626' : '#16a34a',
-                    borderRadius: '8px',
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-                    padding: '12px 20px',
-                    fontSize: '14px',
-                    fontWeight: '500'
-                },
-                onClick: function(){}
-            }).showToast();
-        };
-
-        // Exibir mensagens flash como toasts
-        @if (session('success'))
-            window.showToast("{{ session('success') }}", 'success');
-        @endif
-
-        @if (session('error'))
-            window.showToast("{{ session('error') }}", 'error');
-        @endif
     </script>
 
     @stack('scripts')

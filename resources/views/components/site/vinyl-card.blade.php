@@ -74,6 +74,7 @@
                     data-is-available="{{ json_encode($vinyl->vinylSec->quantity > 0) }}"
                     data-in-wishlist="{{ json_encode(auth()->check() && $vinyl->inWishlist()) }}"
                     data-in-wantlist="{{ json_encode(auth()->check() && !$vinyl->vinylSec->quantity > 0 && $vinyl->inWantlist()) }}"
+                    onclick="{{ auth()->check() ? '' : 'showLoginToast(); return false;' }}"
                 >
                     <i class="fas {{ auth()->check() && $vinyl->inWantlist() ? 'fa-flag' : 'fa-heart' }} {{ (auth()->check() && $vinyl->inWishlist() || auth()->check() && $vinyl->inWantlist()) ? 'text-red-500' : '' }}"></i>
                 </button>
@@ -82,9 +83,9 @@
                 <button
                     type="button"
                     class="add-to-cart-button w-full text-gray-900 bg-yellow-400 border border-gray-300 focus:outline-none hover:bg-gray-900 hover:text-yellow-500 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 {{ !$vinyl->vinylSec->quantity > 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                    data-product-id="{{ $vinyl->product->id }}"
+                    data-product-id="{{ $vinyl->product ? $vinyl->product->id : '' }}"
                     data-quantity="1"
-                    {{ $vinyl->vinylSec->quantity > 0 ? '' : 'disabled' }}
+                    {{ $vinyl->vinylSec->quantity > 0 && $vinyl->product ? '' : 'disabled' }}
                 >
                     {{ $vinyl->vinylSec->quantity > 0 ? 'Adicionar ao Carrinho' : 'Indisponível' }}
                 </button>
@@ -170,15 +171,16 @@
                         data-is-available="{{ json_encode($vinyl->vinylSec->quantity > 0) }}"
                         data-in-wishlist="{{ json_encode(auth()->check() && $vinyl->inWishlist()) }}"
                         data-in-wantlist="{{ json_encode(auth()->check() && !$vinyl->vinylSec->quantity > 0 && $vinyl->inWantlist()) }}"
+                        onclick="{{ auth()->check() ? '' : 'showLoginToast(); return false;' }}"
                     >
                         <i class="fas {{ auth()->check() && $vinyl->inWantlist() ? 'fa-flag' : 'fa-heart' }} {{ (auth()->check() && $vinyl->inWishlist() || auth()->check() && $vinyl->inWantlist()) ? 'text-red-500' : '' }}"></i>
                     </button>
                     <button
                         type="button"
                         class="add-to-cart-button inline-flex items-center p-2 text-gray-900 bg-yellow-500 border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 {{ !$vinyl->vinylSec->quantity > 0 ? 'opacity-50 cursor-not-allowed' : '' }}"
-                        data-product-id="{{ $vinyl->product->id }}"
+                        data-product-id="{{ $vinyl->product ? $vinyl->product->id : '' }}"
                         data-quantity="1"
-                        {{ $vinyl->vinylSec->quantity > 0 ? '' : 'disabled' }}
+                        {{ $vinyl->vinylSec->quantity > 0 && $vinyl->product ? '' : 'disabled' }}
                         title="{{ $vinyl->vinylSec->quantity > 0 ? 'Adicionar ao carrinho' : 'Produto indisponível' }}"
                     >
                         <i class="fas fa-shopping-cart"></i>
@@ -192,6 +194,24 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Função para garantir que o cart-count existe
+    function ensureCartCountElement() {
+        let cartCountElement = document.getElementById('cart-count');
+        if (!cartCountElement) {
+            // Encontrar o botão do carrinho
+            const cartButton = document.querySelector('button[data-dropdown-toggle="cart-dropdown"]');
+            if (cartButton) {
+                // Criar elemento de contagem do carrinho se não existir
+                cartCountElement = document.createElement('span');
+                cartCountElement.id = 'cart-count';
+                cartCountElement.setAttribute('data-cart-count', '');
+                cartCountElement.className = 'absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2';
+                cartButton.appendChild(cartCountElement);
+            }
+        }
+        return cartCountElement;
+    }
+
     // Adiciona eventos aos botões de play
     document.querySelectorAll('.play-button').forEach(button => {
         button.addEventListener('click', function(e) {
@@ -231,6 +251,114 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    // Adiciona eventos aos botões de carrinho
+    document.querySelectorAll('.add-to-cart-button').forEach(button => {
+        button.addEventListener('click', function() {
+            if (this.disabled) {
+                // Se o produto estiver indisponível, mostrar opção para adicionar à wantlist
+                const productId = this.getAttribute('data-product-id');
+                const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+                
+                if (isLoggedIn) {
+                    // Perguntar se quer adicionar à wantlist
+                    if (confirm('Este produto está indisponível. Deseja adicioná-lo à sua lista de desejos para ser notificado quando estiver disponível?')) {
+                        // Adicionar à wantlist
+                        addToWantlist(productId);
+                    }
+                } else {
+                    // Mostrar toast para fazer login
+                    showLoginToast();
+                }
+                return;
+            }
+            
+            const productId = this.getAttribute('data-product-id');
+            const quantity = this.getAttribute('data-quantity');
+            
+            // Adicionar ao carrinho via AJAX
+            fetch('/carrinho/items', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na resposta da rede');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Mostrar toast de sucesso
+                    showToast(data.message, 'success');
+                    
+                    // Atualizar contador do carrinho, se existir
+                    const cartCountElement = ensureCartCountElement();
+                    if (cartCountElement && data.cartCount) {
+                        cartCountElement.textContent = data.cartCount;
+                        
+                        // Tornar visível se estiver escondido
+                        if (cartCountElement.parentElement.style.display === 'none') {
+                            cartCountElement.parentElement.style.display = '';
+                        }
+                    }
+                } else {
+                    // Verificar se a mensagem está relacionada ao estoque
+                    if (data.message && data.message.includes('excede o estoque disponível')) {
+                        showToast(data.message, 'warning');
+                        
+                        // Perguntar se quer adicionar à wantlist se estiver logado
+                        const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+                        if (isLoggedIn) {
+                            setTimeout(() => {
+                                if (confirm('O estoque é insuficiente. Deseja adicionar este item à sua lista de desejos para ser notificado quando estiver disponível?')) {
+                                    // Adicionar à wantlist
+                                    addToWantlist(productId);
+                                }
+                            }, 500);
+                        }
+                    } else {
+                        showToast(data.message || 'Erro ao adicionar produto ao carrinho', 'error');
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                showToast('Erro ao adicionar produto ao carrinho', 'error');
+            });
+        });
+    });
+    
+    // Função para adicionar à wantlist
+    function addToWantlist(productId) {
+        fetch('/wantlist/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                product_type: 'App\\Models\\VinylMaster'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            showToast(data.message, 'success');
+        })
+        .catch(error => {
+            console.error('Erro:', error);
+            showToast('Erro ao adicionar à wantlist', 'error');
+        });
+    }
 });
 </script>
 @endpush

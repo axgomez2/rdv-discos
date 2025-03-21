@@ -250,14 +250,17 @@
             @endif
 
             <!-- Produtos Relacionados -->
-            @if($relatedVinyls && $relatedVinyls->count() > 0)
+            @if(isset($relatedVinyls) && $relatedVinyls->count() > 0)
                 <div class="mt-8">
                     <h2 class="text-xl font-bold text-gray-900 mb-6">Você também pode gostar</h2>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         @foreach($relatedVinyls as $relatedVinyl)
                             <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-shadow duration-300">
-                                <a href="{{ route('site.vinyl.show', ['artistSlug' => $relatedVinyl->artists->first()->slug ?? 'artista', 'titleSlug' => $relatedVinyl->slug]) }}">
+                                <a href="{{ route('site.vinyl.show', [
+                                    'artistSlug' => $relatedVinyl->artists->isNotEmpty() ? $relatedVinyl->artists->first()->slug : 'artista', 
+                                    'titleSlug' => $relatedVinyl->slug
+                                ]) }}">
                                     <div class="relative aspect-square">
                                         <img src="{{ $relatedVinyl->cover_url ?? asset('images/no-image.jpg') }}" alt="{{ $relatedVinyl->title }}" class="w-full h-full object-cover">
 

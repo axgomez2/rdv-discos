@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Services\MercadoPagoService;
+use App\Services\PagSeguroService;
+use App\Services\SystemSettingsService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -15,10 +17,17 @@ use Illuminate\Validation\Rule;
 class CheckoutController extends Controller
 {
     protected $mercadoPagoService;
+    protected $pagSeguroService;
+    protected $systemSettings;
 
-    public function __construct(MercadoPagoService $mercadoPagoService)
-    {
+    public function __construct(
+        MercadoPagoService $mercadoPagoService,
+        PagSeguroService $pagSeguroService,
+        SystemSettingsService $systemSettings
+    ) {
         $this->mercadoPagoService = $mercadoPagoService;
+        $this->pagSeguroService = $pagSeguroService;
+        $this->systemSettings = $systemSettings;
     }
 
     public function index(Request $request)
@@ -35,10 +44,65 @@ class CheckoutController extends Controller
         $tax = round($subtotal * 0.1, 2); // 10% de imposto, arredondado para 2 casas decimais
         $total = $subtotal + $shippingCost + $tax;
 
-        // Dados do Mercado Pago para o frontend
-        $publicKey = $this->mercadoPagoService->getPublicKey();
+        // Configurações de pagamento disponíveis
+        $paymentGateways = $this->getAvailablePaymentGateways();
+        
+        // Dados de gateways para o frontend
+        $mercadoPagoEnabled = $this->mercadoPagoService->isEnabled();
+        $pagSeguroEnabled = $this->pagSeguroService->isEnabled();
+        
+        // Dados dos gateways para configurar o frontend
+        $mercadoPagoPublicKey = $mercadoPagoEnabled ? $this->mercadoPagoService->getPublicKey() : '';
+        $pagSeguroSessionId = $pagSeguroEnabled ? $this->pagSeguroService->getSessionId() : '';
 
-        return view('site.checkout.index', compact('cart', 'publicKey', 'subtotal', 'shippingCost', 'tax', 'total'));
+        return view('site.checkout.index', compact(
+            'cart', 
+            'subtotal', 
+            'shippingCost', 
+            'tax', 
+            'total', 
+            'paymentGateways',
+            'mercadoPagoEnabled',
+            'pagSeguroEnabled',
+            'mercadoPagoPublicKey',
+            'pagSeguroSessionId'
+        ));
+    }
+
+    /**
+     * Obtém os gateways de pagamento habilitados
+     * 
+     * @return array
+     */
+    private function getAvailablePaymentGateways()
+    {
+        $gateways = [];
+        
+        // MercadoPago
+        if ($this->mercadoPagoService->isEnabled()) {
+            $gateways['mercadopago'] = [
+                'name' => 'MercadoPago',
+                'methods' => [
+                    'credit_card' => 'Cartão de Crédito',
+                    'boleto' => 'Boleto',
+                    'pix' => 'PIX'
+                ]
+            ];
+        }
+        
+        // PagSeguro
+        if ($this->pagSeguroService->isEnabled()) {
+            $gateways['pagseguro'] = [
+                'name' => 'PagSeguro', 
+                'methods' => [
+                    'credit_card' => 'Cartão de Crédito',
+                    'boleto' => 'Boleto',
+                    'pix' => 'PIX'
+                ]
+            ];
+        }
+        
+        return $gateways;
     }
 
     public function process(Request $request)
@@ -46,6 +110,7 @@ class CheckoutController extends Controller
         // Validação rigorosa dos dados de entrada
         $validator = Validator::make($request->all(), [
             'shipping_address_id' => 'required|exists:addresses,id',
+            'payment_gateway' => ['required', 'string', Rule::in(['mercadopago', 'pagseguro'])],
             'payment_method' => ['required', 'string', Rule::in(['credit_card', 'boleto', 'pix'])],
             'notes' => 'nullable|string|max:500',
             // Validações específicas para cartão de crédito
@@ -58,6 +123,8 @@ class CheckoutController extends Controller
                 'regex:/^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/',
             ],
         ], [
+            'payment_gateway.required' => 'Selecione um gateway de pagamento.',
+            'payment_gateway.in' => 'O gateway de pagamento selecionado não é válido.',
             'card_token.required_if' => 'O token do cartão é obrigatório para pagamento com cartão de crédito.',
             'installments.required_if' => 'O número de parcelas é obrigatório para pagamento com cartão de crédito.',
             'installments.min' => 'O número mínimo de parcelas é 1.',
@@ -133,31 +200,8 @@ class CheckoutController extends Controller
                 $vinylSec->save();
             }
 
-            // Processar pagamento de acordo com o método selecionado
-            $paymentResult = null;
-
-            switch ($request->payment_method) {
-                case 'credit_card':
-                    // Sanitiza os dados do cartão
-                    $cardData = [
-                        'token' => $request->card_token,
-                        'installments' => (int)$request->installments,
-                        'cpf' => preg_replace('/[^0-9]/', '', $request->card_holder_cpf),
-                    ];
-                    $paymentResult = $this->mercadoPagoService->processCreditCardPayment($order, $cardData);
-                    break;
-
-                case 'boleto':
-                    $paymentResult = $this->mercadoPagoService->processBoletoPayment($order);
-                    break;
-
-                case 'pix':
-                    $paymentResult = $this->mercadoPagoService->processPixPayment($order);
-                    break;
-
-                default:
-                    throw new \Exception('Método de pagamento não suportado.');
-            }
+            // Processar pagamento de acordo com o gateway e método selecionados
+            $paymentResult = $this->processPayment($request, $order);
 
             if (!$paymentResult['success']) {
                 throw new \Exception($paymentResult['message']);
@@ -166,6 +210,7 @@ class CheckoutController extends Controller
             // Atualizar pedido com informações do pagamento
             $order->transaction_code = $paymentResult['transaction_code'] ?? null;
             $order->payment_method = $request->payment_method;
+            $order->payment_gateway = $request->payment_gateway;
             $order->save();
 
             // Limpar o carrinho
@@ -191,6 +236,84 @@ class CheckoutController extends Controller
             DB::rollBack();
             Log::error('Erro no checkout: ' . $e->getMessage());
             return redirect()->route('site.checkout.index')->with('error', 'Erro ao processar o pagamento: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Processa o pagamento através do gateway selecionado
+     *
+     * @param Request $request
+     * @param Order $order
+     * @return array
+     */
+    private function processPayment(Request $request, Order $order)
+    {
+        // Sanitiza os dados do cartão se for pagamento por cartão de crédito
+        $cardData = [];
+        if ($request->payment_method === 'credit_card') {
+            $cardData = [
+                'token' => $request->card_token,
+                'installments' => (int)$request->installments,
+                'cpf' => preg_replace('/[^0-9]/', '', $request->card_holder_cpf),
+                'name' => $request->card_holder_name,
+            ];
+        }
+        
+        // Processa o pagamento de acordo com o gateway selecionado
+        switch ($request->payment_gateway) {
+            case 'mercadopago':
+                // Verifica se o gateway está habilitado
+                if (!$this->mercadoPagoService->isEnabled()) {
+                    return [
+                        'success' => false,
+                        'message' => 'O gateway MercadoPago não está habilitado.',
+                    ];
+                }
+                
+                // Processa o pagamento de acordo com o método
+                switch ($request->payment_method) {
+                    case 'credit_card':
+                        return $this->mercadoPagoService->processCreditCardPayment($order, $cardData);
+                    case 'boleto':
+                        return $this->mercadoPagoService->processBoletoPayment($order);
+                    case 'pix':
+                        return $this->mercadoPagoService->processPixPayment($order);
+                    default:
+                        return [
+                            'success' => false,
+                            'message' => 'Método de pagamento não suportado pelo MercadoPago.',
+                        ];
+                }
+                
+            case 'pagseguro':
+                // Verifica se o gateway está habilitado
+                if (!$this->pagSeguroService->isEnabled()) {
+                    return [
+                        'success' => false,
+                        'message' => 'O gateway PagSeguro não está habilitado.',
+                    ];
+                }
+                
+                // Processa o pagamento de acordo com o método
+                switch ($request->payment_method) {
+                    case 'credit_card':
+                        return $this->pagSeguroService->processCreditCardPayment($order, $cardData);
+                    case 'boleto':
+                        return $this->pagSeguroService->processBoletoPayment($order);
+                    case 'pix':
+                        return $this->pagSeguroService->processPixPayment($order);
+                    default:
+                        return [
+                            'success' => false,
+                            'message' => 'Método de pagamento não suportado pelo PagSeguro.',
+                        ];
+                }
+                
+            default:
+                return [
+                    'success' => false,
+                    'message' => 'Gateway de pagamento não suportado.',
+                ];
         }
     }
 

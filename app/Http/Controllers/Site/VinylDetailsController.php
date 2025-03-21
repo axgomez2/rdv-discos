@@ -23,8 +23,19 @@ class VinylDetailsController extends Controller
             return $track;
         });
 
-        return view('site.vinyls.details', compact('vinyl'));
+        // Buscar discos relacionados baseados no gênero principal
+        $relatedVinyls = collect([]);
+        if ($vinyl->genres->isNotEmpty()) {
+            $primaryGenre = $vinyl->genres->first();
+            $relatedVinyls = VinylMaster::whereHas('genres', function ($query) use ($primaryGenre) {
+                    $query->where('genres.id', $primaryGenre->id);
+                })
+                ->where('id', '!=', $vinyl->id)
+                ->with(['artists', 'vinylSec', 'genres'])
+                ->take(4)
+                ->get();
+        }
+
+        return view('site.vinyls.details', compact('vinyl', 'relatedVinyls'));
     }
 }
-
-

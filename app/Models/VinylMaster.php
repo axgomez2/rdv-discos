@@ -9,10 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\HasWishlist;
+use App\Traits\HasCart;
 
 class VinylMaster extends Model
 {
-    use HasFactory, SoftDeletes, HasWishlist;
+    use HasFactory, SoftDeletes, HasWishlist, HasCart;
 
     protected $fillable = [
         'title',

@@ -171,3 +171,5 @@ require __DIR__.'/auth.php';
 require __DIR__.'/users.php';
 require __DIR__.'/checkout.php';
 require __DIR__.'/cart.php';
+// Rota genérica para detalhes de vinil - deve vir por último para não conflitar com outras rotas
+Route::get('/{artistSlug}/{titleSlug}', [VinylDetailsController::class, 'show'])->name('site.vinyl.show');

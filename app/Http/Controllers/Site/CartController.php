@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Product;
 use App\Services\ShippingService;
+use App\Services\SystemSettingsService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -14,10 +16,12 @@ use Illuminate\Support\Facades\Log;
 class CartController extends Controller
 {
     protected $shippingService;
+    protected $systemSettings;
 
-    public function __construct(ShippingService $shippingService)
+    public function __construct(ShippingService $shippingService, SystemSettingsService $systemSettings)
     {
         $this->shippingService = $shippingService;
+        $this->systemSettings = $systemSettings;
     }
 
     public function index()

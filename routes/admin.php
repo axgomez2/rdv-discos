@@ -74,15 +74,62 @@ Route::middleware(['auth', 'rolemanager:admin'])->group(function () {
 
     // cotas de configurações
     Route::prefix('admin')->group(function () {
+        // Configurações de Produtos
         Route::get('/configuracoes', [SettingsController::class, 'index'])->name('admin.settings.index');
+        
         // Categorias internas
         Route::get('categorias-estilo', [CatStyleShopController::class, 'index'])->name('admin.cat-style-shop.index');
         Route::get('categorias-estilo/criar', [CatStyleShopController::class, 'create'])->name('admin.cat-style-shop.create');
         Route::post('categorias-estilo', [CatStyleShopController::class, 'store'])->name('admin.cat-style-shop.store');
-        Route::get('categorias-estilo/{catStyleShop}/editar', [CatStyleShopController::class, 'edit'])->name('admin.cat-style-shop.edit');
-        Route::put('categorias-estilo/{catStyleShop}', [CatStyleShopController::class, 'update'])->name('admin.cat-style-shop.update');
-        Route::delete('categorias-estilo/{catStyleShop}', [CatStyleShopController::class, 'destroy'])->name('admin.cat-style-shop.destroy');
+        Route::get('categorias-estilo/{id}/editar', [CatStyleShopController::class, 'edit'])->name('admin.cat-style-shop.edit');
+        Route::put('categorias-estilo/{id}', [CatStyleShopController::class, 'update'])->name('admin.cat-style-shop.update');
+        Route::delete('categorias-estilo/{id}', [CatStyleShopController::class, 'destroy'])->name('admin.cat-style-shop.destroy');
 
+        // Configurações da Loja (Novo menu separado)
+        Route::get('/configuracoes-loja', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'index'])
+            ->name('admin.store-settings.index');
+            
+        // Antiga página de configurações da loja (agora redirecionará para a página correta)
+        Route::get('/configuracoes/sistema', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'settingsIndex'])
+            ->name('admin.settings.settingsIndex');
+        
+        // Configurações de serviços externos
+        Route::prefix('configuracoes-loja')->group(function () {
+            // Google OAuth
+            Route::get('/google-oauth', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'editGoogleOauth'])
+                ->name('admin.settings.google-oauth');
+            Route::post('/google-oauth', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updateGoogleOauth'])
+                ->name('admin.settings.google-oauth.update');
+                
+            // PagSeguro
+            Route::get('/pagseguro', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'editPagSeguro'])
+                ->name('admin.settings.pagseguro');
+            Route::post('/pagseguro', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updatePagSeguro'])
+                ->name('admin.settings.pagseguro.update');
+                
+            // MercadoPago
+            Route::get('/mercadopago', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'editMercadoPago'])
+                ->name('admin.settings.mercadopago');
+            Route::post('/mercadopago', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updateMercadoPago'])
+                ->name('admin.settings.mercadopago.update');
+                
+            // Melhor Envio
+            Route::get('/melhor-envio', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'editMelhorEnvio'])
+                ->name('admin.settings.melhorenvio');
+            Route::post('/melhor-envio', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updateMelhorEnvio'])
+                ->name('admin.settings.melhorenvio.update');
+                
+            // Correios
+            Route::get('/correios', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'editCorreios'])
+                ->name('admin.settings.correios');
+            Route::post('/correios', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updateCorreios'])
+                ->name('admin.settings.correios.update');
+                
+            // Testar conexão com serviços
+            Route::post('/test-connection', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'testConnection'])
+                ->name('admin.settings.test-connection');
+        });
+        
         // Weight routes
         Route::post('settings/weights', [SettingsController::class, 'storeWeight'])->name('admin.settings.storeWeight');
         Route::put('settings/weights/{weight}', [SettingsController::class, 'updateWeight'])->name('admin.settings.updateWeight');

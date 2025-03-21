@@ -13,10 +13,12 @@
                 @if($wishlistItems->count() > 0)
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         @foreach($wishlistItems as $item)
-                            @if($item->product_type === 'App\\Models\\VinylMaster')
-                                @include('components.site.wishlist-vinyl', ['vinyl' => $item])
-                            @elseif($item->product_type === 'App\\Models\\Equipment')
-                                @include('components.site.wishlist-equipment', ['equipment' => $item])
+                            @if($item->product)
+                                @if($item->product_type === 'App\\Models\\VinylMaster')
+                                    @include('components.site.wishlist-vinyl', ['vinyl' => $item->product])
+                                @elseif($item->product_type === 'App\\Models\\Equipment')
+                                    @include('components.site.wishlist-equipment', ['equipment' => $item->product])
+                                @endif
                             @endif
                         @endforeach
                     </div>

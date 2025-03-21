@@ -26,10 +26,19 @@ class WishlistController extends Controller
         // Busca itens da wishlist com seus produtos
         $wishlistItems = $user->wishlist()
             ->with(['product'])
-            ->get()
-            ->map(function ($item) {
-                return $item->product;
-            });
+            ->get();
+
+        // Transformar Collection em um objeto paginável
+        $perPage = 12;
+        $currentPage = request()->get('page', 1);
+        $pagedData = $wishlistItems->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $wishlistItems = new \Illuminate\Pagination\LengthAwarePaginator(
+            $pagedData,
+            $wishlistItems->count(),
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         // Busca itens da wantlist com seus produtos
         $wantlistItems = $user->wantlist()

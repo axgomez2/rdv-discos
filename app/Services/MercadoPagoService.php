@@ -19,11 +19,43 @@ class MercadoPagoService
 {
     private $accessToken;
     private $mpClient;
+    private $systemSettings;
+    private $enabled;
 
-    public function __construct()
+    public function __construct(SystemSettingsService $systemSettings)
     {
-        $this->accessToken = config('services.mercadopago.access_token');
+        $this->systemSettings = $systemSettings;
+        $this->accessToken = $this->systemSettings->get('payment', 'mercadopago_access_token');
+        $this->enabled = (bool)$this->systemSettings->get('payment', 'mercadopago_enabled', false);
         $this->configureSdk();
+    }
+
+    /**
+     * Configura o SDK do MercadoPago
+     */
+    private function configureSdk()
+    {
+        if (!$this->accessToken) {
+            Log::warning('MercadoPago: Token de acesso não configurado');
+            return;
+        }
+
+        try {
+            MercadoPagoConfig::setAccessToken($this->accessToken);
+            $this->mpClient = new MercadoPagoClient();
+        } catch (\Exception $e) {
+            Log::error('Erro ao configurar SDK do MercadoPago: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Verifica se o serviço está habilitado
+     * 
+     * @return bool
+     */
+    public function isEnabled()
+    {
+        return $this->enabled && $this->accessToken;
     }
 
     /**
@@ -33,7 +65,7 @@ class MercadoPagoService
      */
     public function getPublicKey()
     {
-        return config('services.mercadopago.public_key');
+        return $this->systemSettings->get('payment', 'mercadopago_public_key', '');
     }
 
     /**
@@ -689,28 +721,6 @@ class MercadoPagoService
                 'message' => 'Erro ao processar webhook do MercadoPago: ' . $e->getMessage()
             ];
         }
-    }
-
-    /**
-     * Configura o SDK do MercadoPago
-     */
-    private function configureSdk()
-    {
-        // Configuração global do SDK v3
-        MercadoPagoConfig::setAccessToken($this->accessToken);
-        
-        // Define o ID de integrador se disponível
-        $integratorId = config('services.mercadopago.integrator_id', '');
-        if (!empty($integratorId)) {
-            MercadoPagoConfig::setIntegratorId($integratorId);
-        }
-        
-        // O modo sandbox é automaticamente ativado quando se usa um
-        // TEST Access Token, como estamos fazendo. Não precisa chamar setSandboxMode.
-        
-        // Na versão 3 do SDK, os clientes específicos (PreferenceClient, SubscriptionClient, etc.)
-        // são instanciados quando necessários, não precisamos de um MercadoPagoClient genérico.
-        // Removendo essa inicialização que está causando o erro.
     }
 
     private function getItems(Order $order)

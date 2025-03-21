@@ -1,6 +1,6 @@
 @props(['vinyls'])
 
-<div class="bg-gray-100 dark:bg-gray-800 overflow-hidden"
+<div class="bg-yellow-400-100 pb-10 overflow-hidden"
      x-data="vinylCarousel"
      x-init="startAutoplay">
     <div class="relative">
