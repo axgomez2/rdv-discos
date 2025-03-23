@@ -1,5 +1,5 @@
 <x-app-layout>
-<div class="bg-yellow-400">
+<div class="bg-gray-100">
     <div class=" max-w-7xl mx-auto ">
         <x-breadcrumb />
     </div>
@@ -18,7 +18,7 @@
 
 
     <!-- Events & Featured Section -->
-    <div class="bg-black ">
+    <div class="bg-gray-200 ">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-8">

@@ -63,7 +63,7 @@ Route::post('/address/store', [AddressController::class, 'store'])->name('addres
 
 // Rotas de autenticação com Google
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 // Rota temporária para teste do Google Login
 Route::get('/test-google', function () {

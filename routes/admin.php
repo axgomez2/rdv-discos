@@ -74,6 +74,14 @@ Route::middleware(['auth', 'rolemanager:admin'])->group(function () {
 
     // cotas de configurações
     Route::prefix('admin')->group(function () {
+        // Configurações de autenticação OAuth
+        Route::get('/settings/oauth', [\App\Http\Controllers\Admin\OAuthSettingsController::class, 'index'])
+            ->name('admin.settings.oauth');
+        Route::post('/settings/oauth/google', [\App\Http\Controllers\Admin\OAuthSettingsController::class, 'saveGoogleSettings'])
+            ->name('admin.settings.oauth.google.save');
+        Route::get('/settings/oauth/google/test', [\App\Http\Controllers\Admin\OAuthSettingsController::class, 'testGoogleConnection'])
+            ->name('admin.settings.oauth.google.test');
+            
         // Configurações de Produtos
         Route::get('/configuracoes', [SettingsController::class, 'index'])->name('admin.settings.index');
         

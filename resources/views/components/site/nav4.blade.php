@@ -1,4 +1,4 @@
-<nav class="bg-black border-b border-gray-800">
+<nav class="bg-gray-900 border-b border-gray-800">
     <!-- Top Navigation Bar -->
     <div class="max-w-screen-xl mx-auto px-4 py-2.5">
       <div class="flex items-center justify-between">
@@ -431,103 +431,79 @@
     </div>
 
 
+<!-- Menu Desktop -->
+<div class="border-t border-gray-200 hidden lg:block">
+    <div class="max-w-screen-xl mx-auto px-2">
+        <div class="flex items-center justify-center relative">
+            <ul class="flex flex-wrap items-center py-3 text-base font-medium text-gray-200 space-x-8">
+                <li><a href="{{ route('site.home') }}" class="hover:text-yellow-400">Início</a></li>
 
-    <!-- Menu Desktop -->
-    <div class="border-t border-gray-200 hidden lg:block">
-      <div class="max-w-screen-xl mx-auto px-2">
-        <div class="flex items-center justify-center">
-          <ul class="flex flex-wrap items-center py-3 text-base font-medium text-gray-200 space-x-8">
-            <li><a href="{{ route('site.home') }}" class="hover:text-yellow-400">Inicio</a></li>
-
-            <!-- Dropdown Dinâmico para Discos -->
-            <div class="relative" x-data="{ open: false }" x-init="$el.querySelector('[x-ref=megaMenuButton]').setAttribute('x-ref', 'megaMenuButton')">
-                <button
-                    x-ref="megaMenuButton"
-                    @click="open = !open"
-                    @keydown.escape.window="open = false"
-                    class="flex items-center text-base font-medium text-gray-200 hover:text-yellow-400"
-                >
-                    <span>Discos</span>
-                    <svg
-                        class="w-4 h-4 ml-1 transition-transform duration-200"
-                        :class="{'rotate-180': open}"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
+                <!-- Dropdown Dinâmico para Discos -->
+                <li class="relative" x-data="{ open: false }">
+                    <button
+                        @click="open = !open"
+                        @keydown.escape.window="open = false"
+                        class="flex items-center text-base font-medium text-gray-200 hover:text-yellow-400"
                     >
-                        <path
-                            fill-rule="evenodd"
-                            d="M5.293 7.293a1 1 0
-                               011.414 0L10 10.586l3.293
-                               -3.293a1 1 0
-                               111.414 1.414l-4 4a1 1
-                               0 01-1.414 0l-4-4a1
-                               1 0 010-1.414z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </button>
+                        <span>Discos</span>
+                        <svg
+                            class="w-4 h-4 ml-1 transition-transform duration-200"
+                            :class="{ 'rotate-180': open }"
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd"
+                            />
+                        </svg>
+                    </button>
 
-                <!-- Mega Menu -->
-                <div
-                    x-show="open"
-                    x-cloak
-                    @click.away="open = false"
-                    x-transition:enter="transition ease-out duration-50"
-                    x-transition:enter-start="opacity-0 translate-y-1"
-                    x-transition:enter-end="opacity-100 translate-y-0"
-                    x-transition:leave="transition ease-in duration-50"
-                    x-transition:leave-start="opacity-100 translate-y-0"
-                    x-transition:leave-end="opacity-0 translate-y-1"
-                    class="fixed left-1/2 transform -translate-x-1/2 z-50 w-screen max-w-5xl px-4 mt-4 sm:px-6 lg:px-8"
-                >
-
-
-                    <div class="overflow-hidden bg-yellow-400 rounded-lg shadow-lg ring-1 ring-gray-700 ring-opacity-5 border border-gray-700">
-
-                        <div class="relative grid gap-6 p-6 lg:grid-cols-5">
-
-                            <a href="{{ route('site.vinyls.index') }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-                               VER TODOS 
-                            </a>
-                            @if(isset($categories) && $categories->count())
-                                @foreach($categories as $category)
-
-                            <a href="{{ route('vinyls.byCategory', ['slug' => $category->slug]) }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
-                                {{ $category->nome }}
-                            </a>
-                                           </div>
-                                           @endforeach
-
-                                           @else
-                                               <div class="col-span-4 p-6">
-                                                   <p class="text-gray-300">Nenhuma categoria encontrada.</p>
-                                               </div>
-                                           @endif
-
-
+                    <!-- Mega Menu -->
+                    <div
+                        x-show="open"
+                        x-cloak
+                        @click.away="open = false"
+                        x-transition:enter="transition ease-out duration-150"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100 scale-100"
+                        x-transition:leave-end="opacity-0 scale-95"
+                        class="absolute top-full left-0 right-0 w-screen z-50 bg-yellow-400 border border-gray-700 shadow-lg"
+                    >
+                        <div class="max-w-screen-xl mx-auto p-6">
+                            <div class="grid gap-6 lg:grid-cols-5 text-center">
+                                <a href="{{ route('site.vinyls.index') }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                                    VER TODOS
+                                </a>
+                                @if(isset($categories) && $categories->count())
+                                    @foreach($categories as $category)
+                                        <a href="{{ route('vinyls.byCategory', ['slug' => $category->slug]) }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                                            {{ $category->nome }}
+                                        </a>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </li>
 
-
-
-
-
-
-
-
-
-            <!-- Outros links -->
-            <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Equipamentos</a></li>
-            <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Sobre</a></li>
-            <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Contato</a></li>
-            <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Ofertas</a></li>
-
-          </ul>
+                <!-- Outros links -->
+                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Equipamentos</a></li>
+                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Sobre</a></li>
+                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Contato</a></li>
+                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Ofertas</a></li>
+            </ul>
         </div>
-      </div>
     </div>
+</div>
+
+
+
+
 
 
     <!-- Drawer Sidebar -->

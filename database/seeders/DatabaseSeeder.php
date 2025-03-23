@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            CreateCacheTablesSeeder::class,
             PlaylistSeeder::class,
             WeightSeeder::class,
             DimensionSeeder::class,

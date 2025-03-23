@@ -19,34 +19,78 @@ class MelhorEnvioService
 
     public function __construct(SystemSettingsService $systemSettings)
     {
-        $this->systemSettings = $systemSettings;
-        $this->enabled = (bool)$this->systemSettings->get('shipping', 'melhorenvio_enabled', false);
-        $this->apiToken = $this->systemSettings->get('shipping', 'melhorenvio_client_token', '');
-        $this->sandbox = (bool)$this->systemSettings->get('shipping', 'melhorenvio_sandbox', true);
-        
-        // Configuração base
-        $this->baseUrl = $this->sandbox
-            ? 'https://sandbox.melhorenvio.com.br/api/v2/'
-            : 'https://api.melhorenvio.com.br/v2/';
-        
-        // Configuração dos dados de origem
-        $defaultPostalCode = config('melhorenvio.from.postal_code', '');
-        $this->fromPostalCode = $this->systemSettings->get('shipping', 'melhorenvio_postal_code', $defaultPostalCode);
-        
-        // Dados do remetente
-        $this->fromData = [
-            'postal_code' => $this->fromPostalCode,
-            'address' => $this->systemSettings->get('shipping', 'melhorenvio_address', ''),
-            'number' => $this->systemSettings->get('shipping', 'melhorenvio_number', ''),
-            'complement' => $this->systemSettings->get('shipping', 'melhorenvio_complement', ''),
-            'district' => $this->systemSettings->get('shipping', 'melhorenvio_district', ''),
-            'city' => $this->systemSettings->get('shipping', 'melhorenvio_city', ''),
-            'state' => $this->systemSettings->get('shipping', 'melhorenvio_state', ''),
-            'country' => $this->systemSettings->get('shipping', 'melhorenvio_country', 'BR'),
-        ];
-        
-        // Garantir que as outras configurações sejam carregadas do arquivo de configuração
-        $this->config = config('melhorenvio');
+        try {
+            $this->systemSettings = $systemSettings;
+            $this->enabled = false; // Definir como false por padrão
+            
+            // Verificar se a tabela cache existe antes de tentar acessá-la
+            if ($this->checkIfCacheTableExists()) {
+                $this->enabled = (bool)$this->systemSettings->get('shipping', 'melhorenvio_enabled', false);
+                $this->apiToken = $this->systemSettings->get('shipping', 'melhorenvio_client_token', '');
+                $this->sandbox = (bool)$this->systemSettings->get('shipping', 'melhorenvio_sandbox', true);
+            } else {
+                $this->apiToken = '';
+                $this->sandbox = true;
+            }
+            
+            // Configuração base
+            $this->baseUrl = $this->sandbox
+                ? 'https://sandbox.melhorenvio.com.br/api/v2/'
+                : 'https://api.melhorenvio.com.br/v2/';
+            
+            // Configuração dos dados de origem
+            $defaultPostalCode = config('melhorenvio.from.postal_code', '');
+            
+            if ($this->checkIfCacheTableExists()) {
+                $this->fromPostalCode = $this->systemSettings->get('shipping', 'melhorenvio_postal_code', $defaultPostalCode);
+                
+                // Dados do remetente
+                $this->fromData = [
+                    'postal_code' => $this->fromPostalCode,
+                    'address' => $this->systemSettings->get('shipping', 'melhorenvio_address', ''),
+                    'number' => $this->systemSettings->get('shipping', 'melhorenvio_number', ''),
+                    'complement' => $this->systemSettings->get('shipping', 'melhorenvio_complement', ''),
+                    'district' => $this->systemSettings->get('shipping', 'melhorenvio_district', ''),
+                    'city' => $this->systemSettings->get('shipping', 'melhorenvio_city', ''),
+                    'state' => $this->systemSettings->get('shipping', 'melhorenvio_state', ''),
+                    'country' => $this->systemSettings->get('shipping', 'melhorenvio_country', 'BR'),
+                ];
+            } else {
+                $this->fromPostalCode = $defaultPostalCode;
+                
+                // Dados do remetente vazios
+                $this->fromData = [
+                    'postal_code' => $this->fromPostalCode,
+                    'country' => 'BR',
+                ];
+            }
+            
+            // Garantir que as outras configurações sejam carregadas do arquivo de configuração
+            $this->config = config('melhorenvio');
+        } catch (\Exception $e) {
+            Log::error('Erro ao inicializar MelhorEnvioService: ' . $e->getMessage());
+            $this->enabled = false;
+            $this->apiToken = '';
+            $this->sandbox = true;
+            $this->fromPostalCode = '';
+            $this->fromData = [];
+            $this->config = config('melhorenvio');
+        }
+    }
+    
+    /**
+     * Verifica se a tabela cache existe no banco de dados
+     * 
+     * @return bool
+     */
+    protected function checkIfCacheTableExists()
+    {
+        try {
+            $tables = \Illuminate\Support\Facades\DB::select("SHOW TABLES LIKE 'cache'");
+            return count($tables) > 0;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
     
     /**
@@ -56,6 +100,9 @@ class MelhorEnvioService
      */
     public function isEnabled()
     {
+        if (!$this->checkIfCacheTableExists()) {
+            return false;
+        }
         return $this->enabled && !empty($this->apiToken);
     }
 
@@ -193,6 +240,10 @@ class MelhorEnvioService
     public function generateLabel($data)
     {
         try {
+            if (!$this->isEnabled()) {
+                return ['success' => false, 'message' => 'Serviço do Melhor Envio não está habilitado'];
+            }
+
             $payload = $this->formatOrderForLabel($data);
 
             Log::info('Gerando etiqueta Melhor Envio:', ['order_id' => $data['id'] ?? 'N/A']);
