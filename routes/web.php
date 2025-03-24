@@ -175,15 +175,25 @@ Route::get('/auth/google/callback', [App\Http\Controllers\Auth\SocialiteControll
 Route::get('/debug-oauth', function () {
     $systemSettings = app(\App\Services\SystemSettingsService::class);
     
+    // Verificar config atual
+    $current_config = config('services.google');
+    
+    // Todas as configurações
     $settings = [
         'enabled' => (bool)$systemSettings->get('oauth', 'google_enabled', false),
-        'client_id' => $systemSettings->get('oauth', 'google_client_id', ''),
-        'has_secret' => !empty($systemSettings->get('oauth', 'google_client_secret', '')),
-        'redirect' => $systemSettings->get('oauth', 'google_redirect', 'não configurado'),
         'raw_enabled_value' => $systemSettings->get('oauth', 'google_enabled', 'valor não definido'),
-        'auth_url' => url('/auth/google'),
-        'callback_url' => url('/auth/google/callback'),
+        'client_id_from_settings' => $systemSettings->get('oauth', 'google_client_id', 'não definido'),
+        'client_id_from_config' => $current_config['client_id'] ?? 'não definido em config',
+        'client_secret_set' => !empty($systemSettings->get('oauth', 'google_client_secret', '')),
+        'redirect_from_settings' => $systemSettings->get('oauth', 'google_redirect', 'não definido'),
+        'redirect_from_config' => $current_config['redirect'] ?? 'não definido em config',
+        'new_auth_url' => url('/login-with-google'),
+        'new_callback_url' => url('/google-callback'),
+        'old_auth_url' => url('/auth/google'),
+        'old_callback_url' => url('/auth/google/callback'),
         'actual_routes' => [
+            'login.with.google' => route('login.with.google'),
+            'google.callback' => route('google.callback'),
             'auth.google' => route('auth.google'),
             'auth.google.callback' => route('auth.google.callback')
         ]

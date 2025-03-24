@@ -89,9 +89,16 @@ class SocialiteController extends Controller
                 Log::info("Client Secret: " . (empty($clientSecret) ? "Não configurado" : "Configurado"));
             }
             
-            // Tenta criar a URL de redirecionamento do Socialite
+            // Tenta criar a URL de redirecionamento do Socialite com escopos explícitos para Google
             try {
-                $redirectResponse = Socialite::driver($provider)->redirect();
+                if ($provider === 'google') {
+                    // Adicionar escopos explícitos para garantir o acesso correto
+                    $redirectResponse = Socialite::driver($provider)
+                        ->scopes(['openid', 'profile', 'email'])
+                        ->redirect();
+                } else {
+                    $redirectResponse = Socialite::driver($provider)->redirect();
+                }
                 Log::info("Redirecionamento para $provider criado com sucesso");
                 return $redirectResponse;
             } catch (\Exception $e) {
@@ -106,38 +113,60 @@ class SocialiteController extends Controller
     }
 
     /**
-     * Obtém as informações do usuário do provedor.
-     *
+     * Manipula o callback do provider após a autenticação
+     * 
      * @param string $provider
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function handleProviderCallback($provider)
     {
         try {
-            // Log para depuração
-            Log::info("Processando callback de $provider");
-
-            // Se for Google, configura com as credenciais do banco de dados
+            Log::info("Recebendo callback do provedor: $provider");
+            Log::info("Rota de callback usada: " . request()->route()->getName());
+            Log::info("URL completa: " . request()->fullUrl());
+            
+            // Se for Google, tenta obter as configurações do DB para garantir consistência
             if ($provider === 'google') {
+                // Obter as credenciais do banco de dados
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
                 
-                // Usa a URL de callback consistente com as rotas definidas
-                $redirectUrl = url('/auth/google/callback');
-
-                // Limpar o cache do Socialite
-                Socialite::forgetDrivers();
-
+                // Determina URL de callback baseado na rota que foi usada
+                $routeName = request()->route()->getName() ?? '';
+                if (in_array($routeName, ['google.callback', 'web.auth.google.callback', 'direct.auth.google.callback'])) {
+                    // URL de callback alternativa
+                    $redirectUrl = url('/google-callback');
+                } else {
+                    // URL de callback padrão
+                    $redirectUrl = url('/auth/google/callback');
+                }
+                
+                // Configurar o Socialite com as credenciais do banco
                 config([
                     'services.google.client_id' => $clientId,
                     'services.google.client_secret' => $clientSecret,
                     'services.google.redirect' => $redirectUrl
                 ]);
-
-                Log::info("Google OAuth credenciais carregadas para o callback");
+                
+                Log::info("Configuração do callback Google OAuth: redirect=$redirectUrl");
             }
             
-            $socialUser = Socialite::driver($provider)->user();
+            try {
+                // Tenta obter o usuário
+                if ($provider === 'google') {
+                    $socialUser = Socialite::driver($provider)
+                        ->scopes(['openid', 'profile', 'email'])
+                        ->stateless()  // Tenta sem estado para evitar problemas de sessão
+                        ->user();
+                } else {
+                    $socialUser = Socialite::driver($provider)->user();
+                }
+                
+                Log::info("Usuário obtido com sucesso do provedor $provider: " . $socialUser->getEmail());
+            } catch (\Exception $e) {
+                Log::error("Erro ao obter usuário do provedor $provider: " . $e->getMessage());
+                throw $e;
+            }
             
             // Log para depuração
             Log::info("Usuário obtido do provedor $provider: " . $socialUser->getEmail());
