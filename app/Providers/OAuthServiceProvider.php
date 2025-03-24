@@ -20,13 +20,26 @@ class OAuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Usar o evento booted para garantir que todas as rotas estejam registradas
+        $this->app->booted(function () {
+            $this->configureOAuthServices();
+        });
+    }
+    
+    /**
+     * Configura os serviços OAuth com as credenciais do banco de dados
+     */
+    protected function configureOAuthServices(): void
+    {
         try {
             $systemSettings = app(SystemSettingsService::class);
             
             // Configurar Google OAuth a partir do banco de dados
             $googleClientId = $systemSettings->get('oauth', 'google_client_id', '');
             $googleClientSecret = $systemSettings->get('oauth', 'google_client_secret', '');
-            $googleRedirect = $systemSettings->get('oauth', 'google_redirect', route('auth.google.callback'));
+            
+            // Usar uma URL fixa ou recuperar do banco, mas não usar route() aqui
+            $googleRedirect = $systemSettings->get('oauth', 'google_redirect', 'https://rdvdiscos.com.br/auth/google/callback');
             
             // Sobrescrever as configurações de serviço com os valores do banco de dados
             if (!empty($googleClientId) && !empty($googleClientSecret)) {
@@ -36,8 +49,6 @@ class OAuthServiceProvider extends ServiceProvider
                     'services.google.redirect' => $googleRedirect,
                 ]);
             }
-            
-            // Fazer o mesmo para outros providers de OAuth se necessário
             
         } catch (\Exception $e) {
             // Silenciosamente ignorar erros durante o boot
