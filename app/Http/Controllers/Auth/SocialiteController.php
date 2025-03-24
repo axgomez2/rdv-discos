@@ -48,8 +48,10 @@ class SocialiteController extends Controller
                 // Obter as credenciais do banco de dados
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
-                $redirectUrl = $this->systemSettings->get('oauth', 'google_redirect', 'https://rdvdiscos.com.br/auth/google/callback');
-
+                
+                // Usa a URL de callback consistente com as rotas definidas
+                $redirectUrl = url('/auth/google/callback');
+                
                 if (empty($clientId) || empty($clientSecret)) {
                     Log::error('Google OAuth credentials are not configured in database');
                     return redirect('/login')->with('error', 'Configuração do Google OAuth incompleta. Entre em contato com o administrador.');
@@ -93,7 +95,9 @@ class SocialiteController extends Controller
             if ($provider === 'google') {
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
-                $redirectUrl = $this->systemSettings->get('oauth', 'google_redirect', 'https://rdvdiscos.com.br/auth/google/callback');
+                
+                // Usa a URL de callback consistente com as rotas definidas
+                $redirectUrl = url('/auth/google/callback');
 
                 // Limpar o cache do Socialite
                 Socialite::forgetDrivers();

@@ -76,12 +76,3 @@ Route::middleware('auth')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
-
-// Rotas específicas para Google OAuth
-Route::get('/login/google', [SocialiteController::class, 'redirectToProvider'])
-    ->name('auth.google')
-    ->defaults('provider', 'google');
-    
-Route::get('/login/google/callback', [SocialiteController::class, 'handleProviderCallback'])
-    ->name('auth.google.callback')
-    ->defaults('provider', 'google');

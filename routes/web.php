@@ -162,6 +162,12 @@ Route::get('/debug-oauth', function () {
         'has_secret' => !empty($systemSettings->get('oauth', 'google_client_secret', '')),
         'redirect' => $systemSettings->get('oauth', 'google_redirect', 'não configurado'),
         'raw_enabled_value' => $systemSettings->get('oauth', 'google_enabled', 'valor não definido'),
+        'auth_url' => url('/auth/google'),
+        'callback_url' => url('/auth/google/callback'),
+        'actual_routes' => [
+            'auth.google' => route('auth.google'),
+            'auth.google.callback' => route('auth.google.callback')
+        ]
     ];
     
     return response()->json($settings);
