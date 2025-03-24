@@ -33,6 +33,9 @@ class RouteServiceProvider extends ServiceProvider
                 ->prefix('api')
                 ->group(base_path('routes/api.php'));
 
+            // Carrega as rotas OAuth diretamente, sem middleware, para garantir disponibilidade
+            Route::group([], base_path('routes/oauth.php'));
+
             Route::middleware('web')
                 ->group(base_path('routes/web.php'));
                 

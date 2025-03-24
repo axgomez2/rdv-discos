@@ -152,6 +152,16 @@ Route::get('/terms-of-service', function () {
     return view('site.terms-of-service');
 })->name('terms.service');
 
+// Adicionar rotas explícitas para Google Auth na web.php para garantir disponibilidade
+// Estas rotas são complementares às definidas em auth.php para garantir que estejam disponíveis
+Route::get('/auth/google', [App\Http\Controllers\Auth\SocialiteController::class, 'redirectToProvider'])
+    ->name('web.auth.google')
+    ->defaults('provider', 'google');
+    
+Route::get('/auth/google/callback', [App\Http\Controllers\Auth\SocialiteController::class, 'handleProviderCallback'])
+    ->name('web.auth.google.callback')
+    ->defaults('provider', 'google');
+
 // Rota de diagnóstico para Google OAuth (desabilitar em produção após testes)
 Route::get('/debug-oauth', function () {
     $systemSettings = app(\App\Services\SystemSettingsService::class);

@@ -31,8 +31,12 @@ class SocialiteController extends Controller
     public function redirectToProvider($provider)
     {
         try {
+            // Log para depuração
+            Log::info("Iniciando autenticação com provedor: $provider");
+            
             // Verificar se o provedor é suportado
             if (!in_array($provider, ['google', 'facebook'])) {
+                Log::error("Provedor não suportado: $provider");
                 return redirect('/login')->with('error', "Provedor de autenticação '$provider' não é suportado.");
             }
 
@@ -69,9 +73,21 @@ class SocialiteController extends Controller
 
                 Log::info("Google OAuth configurado com credenciais do banco de dados");
                 Log::info("Redirect URI configurado: " . $redirectUrl);
+                
+                // Log adicional para depuração
+                Log::info("Client ID: " . substr($clientId, 0, 5) . "..." . substr($clientId, -5));
+                Log::info("Client Secret: " . (empty($clientSecret) ? "Não configurado" : "Configurado"));
             }
             
-            return Socialite::driver($provider)->redirect();
+            // Tenta criar a URL de redirecionamento do Socialite
+            try {
+                $redirectResponse = Socialite::driver($provider)->redirect();
+                Log::info("Redirecionamento para $provider criado com sucesso");
+                return $redirectResponse;
+            } catch (\Exception $e) {
+                Log::error("Erro ao criar redirecionamento para o provedor $provider: " . $e->getMessage());
+                throw $e; // Repropagar para o catch externo
+            }
         } catch (Exception $e) {
             Log::error("Erro ao redirecionar para o provedor $provider: " . $e->getMessage());
             Log::error($e->getTraceAsString());
