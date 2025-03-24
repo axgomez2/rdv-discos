@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use App\Services\SystemSettingsService;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Event;
 
 class OAuthServiceProvider extends ServiceProvider
 {
@@ -12,7 +14,8 @@ class OAuthServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Este método é chamado antes do boot e antes que as rotas sejam carregadas
+        // Não fazemos nada aqui que dependa de rotas
     }
 
     /**
@@ -20,41 +23,64 @@ class OAuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Usar o evento booted para garantir que todas as rotas estejam registradas
-        $this->app->booted(function () {
-            $this->configureOAuthServices();
+        // Registramos um evento para quando a aplicação estiver totalmente inicializada
+        // e apenas quando uma solicitação web estiver em andamento
+        if (!$this->app->runningInConsole()) {
+            Event::listen('Illuminate\Foundation\Http\Events\RequestHandled', function () {
+                $this->configureSocialiteForNextRequest();
+            });
+        }
+
+        // Quando o Socialite for usado, configuramos ele com os dados do banco
+        $this->app->resolving('Laravel\Socialite\SocialiteManager', function ($socialite) {
+            $this->configureGoogleDriver($socialite);
         });
     }
     
     /**
-     * Configura os serviços OAuth com as credenciais do banco de dados
+     * Configura o Socialite para a próxima requisição
      */
-    protected function configureOAuthServices(): void
+    protected function configureSocialiteForNextRequest(): void
     {
         try {
-            $systemSettings = app(SystemSettingsService::class);
-            
-            // Configurar Google OAuth a partir do banco de dados
-            $googleClientId = $systemSettings->get('oauth', 'google_client_id', '');
-            $googleClientSecret = $systemSettings->get('oauth', 'google_client_secret', '');
-            
-            // Usar uma URL fixa ou recuperar do banco, mas não usar route() aqui
-            $googleRedirect = $systemSettings->get('oauth', 'google_redirect', 'https://rdvdiscos.com.br/auth/google/callback');
-            
-            // Sobrescrever as configurações de serviço com os valores do banco de dados
-            if (!empty($googleClientId) && !empty($googleClientSecret)) {
-                config([
-                    'services.google.client_id' => $googleClientId,
-                    'services.google.client_secret' => $googleClientSecret,
-                    'services.google.redirect' => $googleRedirect,
-                ]);
-            }
-            
+            // Limpar cache do Socialite a cada requisição para usar configurações atualizadas
+            Socialite::forgetDrivers();
         } catch (\Exception $e) {
-            // Silenciosamente ignorar erros durante o boot
-            // Isso pode acontecer se o banco de dados ainda não estiver configurado
-            // durante a execução de comandos como migrate:fresh
-            logger()->error('Erro ao carregar configurações OAuth: ' . $e->getMessage());
+            // Silenciosamente ignorar qualquer erro
+        }
+    }
+    
+    /**
+     * Configura o driver do Google com as configurações do banco de dados
+     */
+    protected function configureGoogleDriver($socialite): void
+    {
+        try {
+            // Tentamos obter as configurações do banco de dados apenas no contexto de uma requisição web
+            if (!$this->app->runningInConsole() && request() !== null) {
+                /** @var SystemSettingsService $systemSettings */
+                $systemSettings = $this->app->make(SystemSettingsService::class);
+                
+                // Obtemos as configurações
+                $googleClientId = $systemSettings->get('oauth', 'google_client_id', '');
+                $googleClientSecret = $systemSettings->get('oauth', 'google_client_secret', '');
+                $googleRedirect = $systemSettings->get('oauth', 'google_redirect', '');
+                
+                // Apenas configuramos se houver dados válidos
+                if (!empty($googleClientId) && !empty($googleClientSecret)) {
+                    config(['services.google.client_id' => $googleClientId]);
+                    config(['services.google.client_secret' => $googleClientSecret]);
+                    
+                    if (!empty($googleRedirect)) {
+                        config(['services.google.redirect' => $googleRedirect]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Silenciosamente ignorar erros
+            if ($this->app->hasDebugModeEnabled()) {
+                logger()->error('Erro ao configurar driver Google do Socialite: ' . $e->getMessage());
+            }
         }
     }
 }
