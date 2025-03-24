@@ -64,9 +64,9 @@ Route::get('/{artistSlug}/{titleSlug}', [VinylDetailsController::class, 'show'])
 Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
 
 // Rotas de autenticação com Google
-Route::get('auth/google', [SocialiteController::class, 'redirectToProvider'])->name('auth.google')
+Route::get('login/google', [SocialiteController::class, 'redirectToProvider'])->name('auth.google')
     ->defaults('provider', 'google');
-Route::get('auth/google/callback', [SocialiteController::class, 'handleProviderCallback'])->name('auth.google.callback')
+Route::get('login/google/callback', [SocialiteController::class, 'handleProviderCallback'])->name('auth.google.callback')
     ->defaults('provider', 'google');
 
 Route::get('/test-mercadopago', function() {
