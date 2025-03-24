@@ -54,16 +54,25 @@ class SocialiteController extends Controller
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
                 
-                // Determina URL de callback baseado na rota que foi usada
-                $routeName = request()->route()->getName() ?? '';
-                if ($routeName === 'login.with.google') {
-                    // Usar a URL de callback alternativa
-                    $redirectUrl = url('/google-callback');
-                    Log::info("Usando URL de callback alternativa: $redirectUrl");
+                // Obter a URL de redirecionamento configurada no banco de dados
+                $configuredRedirect = $this->systemSettings->get('oauth', 'google_redirect', '');
+                
+                // Se tiver um redirect configurado no banco, usar esse em vez do calculado
+                if (!empty($configuredRedirect)) {
+                    Log::info("Substituindo URL de redirecionamento pela configurada no banco: $configuredRedirect");
+                    $redirectUrl = $configuredRedirect;
                 } else {
-                    // Usa a URL de callback padrão
-                    $redirectUrl = url('/auth/google/callback');
-                    Log::info("Usando URL de callback padrão: $redirectUrl");
+                    // Determina URL de callback baseado na rota que foi usada
+                    $routeName = request()->route()->getName() ?? '';
+                    if ($routeName === 'login.with.google') {
+                        // Usar a URL de callback alternativa
+                        $redirectUrl = url('/google-callback');
+                        Log::info("Usando URL de callback alternativa: $redirectUrl");
+                    } else {
+                        // Usa a URL de callback padrão
+                        $redirectUrl = url('/auth/google/callback');
+                        Log::info("Usando URL de callback padrão: $redirectUrl");
+                    }
                 }
                 
                 if (empty($clientId) || empty($clientSecret)) {
@@ -131,14 +140,23 @@ class SocialiteController extends Controller
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
                 
-                // Determina URL de callback baseado na rota que foi usada
-                $routeName = request()->route()->getName() ?? '';
-                if (in_array($routeName, ['google.callback', 'web.auth.google.callback', 'direct.auth.google.callback'])) {
-                    // URL de callback alternativa
-                    $redirectUrl = url('/google-callback');
+                // Obter a URL de redirecionamento configurada no banco de dados
+                $configuredRedirect = $this->systemSettings->get('oauth', 'google_redirect', '');
+                
+                // Se tiver um redirect configurado no banco, usar esse
+                if (!empty($configuredRedirect)) {
+                    $redirectUrl = $configuredRedirect;
+                    Log::info("Usando URL de redirecionamento configurada no banco: $redirectUrl");
                 } else {
-                    // URL de callback padrão
-                    $redirectUrl = url('/auth/google/callback');
+                    // Determina URL de callback baseado na rota que foi usada
+                    $routeName = request()->route()->getName() ?? '';
+                    if (in_array($routeName, ['google.callback', 'web.auth.google.callback', 'direct.auth.google.callback'])) {
+                        // URL de callback alternativa
+                        $redirectUrl = url('/google-callback');
+                    } else {
+                        // URL de callback padrão
+                        $redirectUrl = url('/auth/google/callback');
+                    }
                 }
                 
                 // Configurar o Socialite com as credenciais do banco
