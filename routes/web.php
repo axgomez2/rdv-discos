@@ -156,6 +156,21 @@ Route::get('/terms-of-service', function () {
     return view('site.terms-of-service');
 })->name('terms.service');
 
+// Rota de diagnóstico para Google OAuth (desabilitar em produção após testes)
+Route::get('/debug-oauth', function () {
+    $systemSettings = app(\App\Services\SystemSettingsService::class);
+    
+    $settings = [
+        'enabled' => (bool)$systemSettings->get('oauth', 'google_enabled', false),
+        'client_id' => $systemSettings->get('oauth', 'google_client_id', ''),
+        'has_secret' => !empty($systemSettings->get('oauth', 'google_client_secret', '')),
+        'redirect' => $systemSettings->get('oauth', 'google_redirect', 'não configurado'),
+        'raw_enabled_value' => $systemSettings->get('oauth', 'google_enabled', 'valor não definido'),
+    ];
+    
+    return response()->json($settings);
+});
+
 require __DIR__.'/auth.php';
 require __DIR__.'/users.php';
 require __DIR__.'/checkout.php';

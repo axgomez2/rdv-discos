@@ -51,14 +51,21 @@ class OAuthSettingsController extends Controller
         $this->systemSettings->set('oauth', 'google_client_id', $request->input('client_id'));
         $this->systemSettings->set('oauth', 'google_client_secret', $request->input('client_secret'));
         $this->systemSettings->set('oauth', 'google_redirect', $request->input('redirect')); // Salvar URL diretamente
-        $this->systemSettings->set('oauth', 'google_enabled', $request->has('enabled'));
+        
+        // Tratar explicitamente o status de ativação como boolean
+        $enabled = $request->has('enabled') && $request->input('enabled') === 'on';
+        $this->systemSettings->set('oauth', 'google_enabled', $enabled);
 
-        // Limpar o cache do Socialite se estiver sendo usado
+        // Forçar limpeza do cache do Socialite e do sistema
         if (class_exists('Laravel\Socialite\Facades\Socialite')) {
             \Laravel\Socialite\Facades\Socialite::forgetDrivers();
         }
+        
+        // Limpar o cache do sistema também
+        \Illuminate\Support\Facades\Cache::forget('system_settings_oauth_google_enabled');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
 
-        return redirect()->back()->with('success', 'Configurações do Google atualizadas com sucesso.');
+        return redirect()->back()->with('success', 'Configurações do Google OAuth atualizadas com sucesso.');
     }
 
     /**
