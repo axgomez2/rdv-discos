@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/admin.php';
-require __DIR__.'/oauth.php'; // Incluir rotas do OAuth
+// require __DIR__.'/oauth.php'; // Removido para evitar conflitos
 
 Route::middleware(['auth', 'verified', 'rolemanager:resale'])->group(function () {
     Route::prefix('pdv')->group(function () {
@@ -63,11 +63,7 @@ Route::get('/{artistSlug}/{titleSlug}', [VinylDetailsController::class, 'show'])
 
 Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
 
-// Rotas de autenticação com Google
-Route::get('login/google', [SocialiteController::class, 'redirectToProvider'])->name('auth.google')
-    ->defaults('provider', 'google');
-Route::get('login/google/callback', [SocialiteController::class, 'handleProviderCallback'])->name('auth.google.callback')
-    ->defaults('provider', 'google');
+// Rotas de autenticação com Google movidas para auth.php
 
 Route::get('/test-mercadopago', function() {
     $mercadoPagoService = app(App\Services\MercadoPagoService::class);
@@ -175,4 +171,3 @@ require __DIR__.'/auth.php';
 require __DIR__.'/users.php';
 require __DIR__.'/checkout.php';
 require __DIR__.'/cart.php';
-require __DIR__.'/oauth.php';
