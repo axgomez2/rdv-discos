@@ -176,12 +176,29 @@ class SystemSettingsController extends Controller
                 'sandbox' => 'nullable',
                 'enabled' => 'nullable',
                 'auto_approve' => 'nullable',
+                'insurance' => 'nullable',
+                'receipt' => 'nullable',
+                'own_hand' => 'nullable',
+                'timeout' => 'nullable|integer|min:10|max:60',
+                'additional_days' => 'nullable|integer|min:0|max:30',
                 'service_pac' => 'nullable',
                 'service_sedex' => 'nullable',
                 'service_mini' => 'nullable',
                 'service_jadlog' => 'nullable',
                 'service_azul' => 'nullable',
                 'service_latam' => 'nullable',
+                // Dados do remetente
+                'from_name' => 'required|string|max:255',
+                'from_document' => 'required|string|max:20',
+                'from_phone' => 'required|string|max:20',
+                'from_email' => 'required|email|max:255',
+                'from_postal_code' => 'required|string|max:10',
+                'from_state' => 'required|string|max:2',
+                'from_city' => 'required|string|max:100',
+                'from_address' => 'required|string|max:255',
+                'from_number' => 'required|string|max:20',
+                'from_complement' => 'nullable|string|max:255',
+                'from_district' => 'required|string|max:100',
             ]);
 
             $data = [
@@ -190,18 +207,53 @@ class SystemSettingsController extends Controller
                 'sandbox' => isset($validated['sandbox']) ? 'true' : 'false',
                 'enabled' => isset($validated['enabled']) ? 'true' : 'false',
                 'auto_approve' => isset($validated['auto_approve']) ? 'true' : 'false',
+                'insurance' => isset($validated['insurance']) ? 'true' : 'false',
+                'receipt' => isset($validated['receipt']) ? 'true' : 'false',
+                'own_hand' => isset($validated['own_hand']) ? 'true' : 'false',
+                'timeout' => $validated['timeout'] ?? '30',
+                'additional_days' => $validated['additional_days'] ?? '0',
                 'service_pac' => isset($validated['service_pac']) ? 'true' : 'false',
                 'service_sedex' => isset($validated['service_sedex']) ? 'true' : 'false',
                 'service_mini' => isset($validated['service_mini']) ? 'true' : 'false',
                 'service_jadlog' => isset($validated['service_jadlog']) ? 'true' : 'false',
                 'service_azul' => isset($validated['service_azul']) ? 'true' : 'false',
                 'service_latam' => isset($validated['service_latam']) ? 'true' : 'false',
+                // Dados do remetente
+                'from_name' => $validated['from_name'],
+                'from_document' => $validated['from_document'],
+                'from_phone' => $validated['from_phone'],
+                'from_email' => $validated['from_email'],
+                'from_postal_code' => $validated['from_postal_code'],
+                'from_state' => $validated['from_state'],
+                'from_city' => $validated['from_city'],
+                'from_address' => $validated['from_address'],
+                'from_number' => $validated['from_number'],
+                'from_complement' => $validated['from_complement'] ?? '',
+                'from_district' => $validated['from_district'],
             ];
+
+            // Preservar o token se já existir
+            $settings = array_filter($this->settingsService->getGroup('shipping'), function($key) {
+                return strpos($key, 'melhorenvio_') === 0;
+            }, ARRAY_FILTER_USE_KEY);
+            
+            if (!empty($settings['melhorenvio_token'])) {
+                $data['token'] = $settings['melhorenvio_token'];
+            }
+            
+            if (!empty($settings['melhorenvio_refresh_token'])) {
+                $data['refresh_token'] = $settings['melhorenvio_refresh_token'];
+            }
+            
+            if (!empty($settings['melhorenvio_token_expires_at'])) {
+                $data['token_expires_at'] = $settings['melhorenvio_token_expires_at'];
+            }
 
             $this->settingsService->saveMelhorEnvio($data);
 
             return redirect()->route('admin.settings.melhorenvio')->with('success', 'Configurações do Melhor Envio atualizadas com sucesso!');
         } catch (\Exception $e) {
+            Log::error('Erro ao atualizar configurações do Melhor Envio: ' . $e->getMessage());
             return redirect()->route('admin.settings.melhorenvio')->with('error', 'Erro ao atualizar configurações: ' . $e->getMessage());
         }
     }

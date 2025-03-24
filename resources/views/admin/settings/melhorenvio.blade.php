@@ -163,6 +163,245 @@
                                     Aprovar pedidos automaticamente
                                 </label>
                             </div>
+                            
+                            <div class="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="insurance"
+                                    id="insurance"
+                                    value="1"
+                                    {{ (isset($settings['melhorenvio_insurance']) && $settings['melhorenvio_insurance'] == 'true') ? 'checked' : '' }}
+                                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                >
+                                <label for="insurance" class="ml-2 block text-sm text-gray-700">
+                                    Adicionar seguro automaticamente aos envios
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="receipt"
+                                    id="receipt"
+                                    value="1"
+                                    {{ (isset($settings['melhorenvio_receipt']) && $settings['melhorenvio_receipt'] == 'true') ? 'checked' : '' }}
+                                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                >
+                                <label for="receipt" class="ml-2 block text-sm text-gray-700">
+                                    Adicionar aviso de recebimento
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    name="own_hand"
+                                    id="own_hand"
+                                    value="1"
+                                    {{ (isset($settings['melhorenvio_own_hand']) && $settings['melhorenvio_own_hand'] == 'true') ? 'checked' : '' }}
+                                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                >
+                                <label for="own_hand" class="ml-2 block text-sm text-gray-700">
+                                    Entrega com mãos próprias
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="timeout" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Timeout da API (segundos)
+                                </label>
+                                <input
+                                    type="number"
+                                    name="timeout"
+                                    id="timeout"
+                                    value="{{ $settings['melhorenvio_timeout'] ?? '30' }}"
+                                    min="10"
+                                    max="60"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="additional_days" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Dias adicionais para prazo de entrega
+                                </label>
+                                <input
+                                    type="number"
+                                    name="additional_days"
+                                    id="additional_days"
+                                    value="{{ $settings['melhorenvio_additional_days'] ?? '0' }}"
+                                    min="0"
+                                    max="30"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                >
+                                <p class="mt-1 text-xs text-gray-500">Dias extras a adicionar ao prazo informado pelas transportadoras</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Seção de dados do remetente -->
+                    <div class="mb-6">
+                        <h2 class="text-lg font-semibold mb-4 border-b pb-2">Dados do Remetente</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="from_name" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Nome/Razão Social <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_name"
+                                    id="from_name"
+                                    value="{{ $settings['melhorenvio_from_name'] ?? old('from_name') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_document" class="block text-sm font-medium text-gray-700 mb-1">
+                                    CPF/CNPJ <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_document"
+                                    id="from_document"
+                                    value="{{ $settings['melhorenvio_from_document'] ?? old('from_document') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_phone" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Telefone <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_phone"
+                                    id="from_phone"
+                                    value="{{ $settings['melhorenvio_from_phone'] ?? old('from_phone') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_email" class="block text-sm font-medium text-gray-700 mb-1">
+                                    E-mail <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="email"
+                                    name="from_email"
+                                    id="from_email"
+                                    value="{{ $settings['melhorenvio_from_email'] ?? old('from_email') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                            <div>
+                                <label for="from_postal_code" class="block text-sm font-medium text-gray-700 mb-1">
+                                    CEP <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_postal_code"
+                                    id="from_postal_code"
+                                    value="{{ $settings['melhorenvio_from_postal_code'] ?? old('from_postal_code') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_state" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Estado <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_state"
+                                    id="from_state"
+                                    value="{{ $settings['melhorenvio_from_state'] ?? old('from_state') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_city" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Cidade <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_city"
+                                    id="from_city"
+                                    value="{{ $settings['melhorenvio_from_city'] ?? old('from_city') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div>
+                                <label for="from_address" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Endereço/Logradouro <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_address"
+                                    id="from_address"
+                                    value="{{ $settings['melhorenvio_from_address'] ?? old('from_address') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_number" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Número <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_number"
+                                    id="from_number"
+                                    value="{{ $settings['melhorenvio_from_number'] ?? old('from_number') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_complement" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Complemento
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_complement"
+                                    id="from_complement"
+                                    value="{{ $settings['melhorenvio_from_complement'] ?? old('from_complement') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                >
+                            </div>
+                            
+                            <div>
+                                <label for="from_district" class="block text-sm font-medium text-gray-700 mb-1">
+                                    Bairro <span class="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    name="from_district"
+                                    id="from_district"
+                                    value="{{ $settings['melhorenvio_from_district'] ?? old('from_district') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                                    required
+                                >
+                            </div>
                         </div>
                     </div>
                     

@@ -209,7 +209,7 @@ class SocialiteController extends Controller
             Auth::login($user, true);
             
             Log::info("Autenticação bem-sucedida para: " . $user->email);
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/');
 
         } catch (Exception $e) {
             Log::error("Erro durante autenticação com $provider: " . $e->getMessage());

@@ -697,35 +697,6 @@
                             Configurar
                         </a>
                     </div>
-                    
-                    <!-- Card do MercadoEnvio -->
-                    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center">
-                                <svg class="w-8 h-8 text-yellow-500 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                                </svg>
-                                <h3 class="text-lg font-semibold text-gray-900">MercadoEnvio</h3>
-                            </div>
-                            
-                            <!-- Status indicator -->
-                            <span 
-                                class="px-2 py-1 text-xs font-semibold rounded-full"
-                                :class="{ 
-                                    'bg-green-100 text-green-800': '{{ isset($shippingSettings['mercadoenvio_enabled']) && $shippingSettings['mercadoenvio_enabled'] == 'true' }}',
-                                    'bg-red-100 text-red-800': '{{ !isset($shippingSettings['mercadoenvio_enabled']) || $shippingSettings['mercadoenvio_enabled'] != 'true' }}'
-                                }"
-                            >
-                                {{ isset($shippingSettings['mercadoenvio_enabled']) && $shippingSettings['mercadoenvio_enabled'] == 'true' ? 'Ativo' : 'Inativo' }}
-                            </span>
-                        </div>
-                        
-                        <p class="text-gray-600 mb-4">Configure o serviço de entregas MercadoEnvio para envio de produtos.</p>
-                        
-                        <a href="{{ route('admin.settings.mercadoenvio') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            Configurar
-                        </a>
-                    </div>
                 </div>
             </div>
 
