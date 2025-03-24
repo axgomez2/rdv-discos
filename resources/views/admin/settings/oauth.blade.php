@@ -8,7 +8,10 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">Configurações do Google OAuth</h4>
+                    <h4 class="card-title">Google OAuth</h4>
+                    <span id="google-oauth-status" class="badge {{ $googleSettings['enabled'] ? 'badge-success' : 'badge-danger' }}" style="margin-left: 10px;">
+                        {{ $googleSettings['enabled'] ? 'Ativo' : 'Inativo' }}
+                    </span>
                 </div>
                 <div class="card-body">
                     @if (session('success'))
@@ -111,6 +114,7 @@
         document.getElementById('test-connection').addEventListener('click', function() {
             const button = this;
             const originalText = button.innerHTML;
+            const statusBadge = document.getElementById('google-oauth-status');
             
             button.disabled = true;
             button.innerHTML = 'Testando...';
@@ -120,6 +124,15 @@
                 .then(data => {
                     if (data.success) {
                         alert('Sucesso: ' + data.message);
+                        
+                        // Atualizar o status na interface
+                        if (data.status === 'active') {
+                            statusBadge.className = 'badge badge-success';
+                            statusBadge.textContent = 'Ativo';
+                        } else {
+                            statusBadge.className = 'badge badge-danger';
+                            statusBadge.textContent = 'Inativo';
+                        }
                     } else {
                         alert('Erro: ' + data.message);
                     }

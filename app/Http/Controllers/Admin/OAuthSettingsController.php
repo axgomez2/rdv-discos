@@ -76,21 +76,38 @@ class OAuthSettingsController extends Controller
         $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
         $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
 
-        if (!$enabled || empty($clientId) || empty($clientSecret)) {
+        if (empty($clientId) || empty($clientSecret)) {
             return response()->json([
                 'success' => false,
-                'message' => 'As configurações do Google OAuth não estão completas ou o serviço está desativado.'
+                'message' => 'As configurações do Google OAuth não estão completas.'
             ]);
+        }
+
+        // Se as credenciais estiverem configuradas mas o serviço estiver desativado, ativamos automaticamente
+        if (!$enabled && !empty($clientId) && !empty($clientSecret)) {
+            $this->systemSettings->set('oauth', 'google_enabled', true, 'Google OAuth Enabled', false);
+            $enabled = true;
         }
 
         try {
             // Verifica se as configurações estão corretas
             $redirectUrl = $this->systemSettings->get('oauth', 'google_redirect', route('auth.google.callback'));
             
+            // Configura o Socialite com as credenciais do banco
+            config([
+                'services.google.client_id' => $clientId,
+                'services.google.client_secret' => $clientSecret,
+                'services.google.redirect' => $redirectUrl
+            ]);
+            
+            // Limpar o cache do Socialite
+            \Laravel\Socialite\Facades\Socialite::forgetDrivers();
+            
             return response()->json([
                 'success' => true,
-                'message' => 'Configurações do Google OAuth parecem válidas.',
-                'redirect_url' => $redirectUrl
+                'message' => 'Configurações do Google OAuth estão válidas e ' . ($enabled ? 'ativadas' : 'desativadas') . '.',
+                'redirect_url' => $redirectUrl,
+                'status' => $enabled ? 'active' : 'inactive'
             ]);
         } catch (\Exception $e) {
             return response()->json([

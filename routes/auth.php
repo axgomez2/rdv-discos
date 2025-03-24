@@ -36,8 +36,21 @@ Route::middleware('guest')->group(function () {
         ->name('password.store');
 
     // Rotas para autenticação social
-    Route::get('auth/{provider}', [SocialiteController::class, 'redirectToProvider']);
-    Route::get('auth/{provider}/callback', [SocialiteController::class, 'handleProviderCallback']);
+    Route::get('auth/{provider}', [SocialiteController::class, 'redirectToProvider'])
+        ->name('auth.provider');
+    
+    // Rotas específicas com nomes corretos para cada provider
+    Route::get('auth/google', [SocialiteController::class, 'redirectToProvider'])
+        ->name('auth.google')
+        ->defaults('provider', 'google');
+        
+    Route::get('auth/google/callback', [SocialiteController::class, 'handleProviderCallback'])
+        ->name('auth.google.callback')
+        ->defaults('provider', 'google');
+        
+    // Rota genérica para callbacks
+    Route::get('auth/{provider}/callback', [SocialiteController::class, 'handleProviderCallback'])
+        ->name('auth.provider.callback');
 });
 
 Route::middleware('auth')->group(function () {
@@ -57,7 +70,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 
-    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+    Route::put('password', [PasswordController::class, 'update'])
+        ->name('password.update');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
