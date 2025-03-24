@@ -16,7 +16,7 @@ use App\Http\Controllers\Site\WishlistController;
 use App\Http\Controllers\Site\ChartDjsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Site\NavbarController;
-use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\SocialiteController;
 use Laravel\Socialite\Facades\Socialite;
 
 // Rotas para o Navbar
@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/admin.php';
+require __DIR__.'/oauth.php'; // Incluir rotas do OAuth
 
 Route::middleware(['auth', 'verified', 'rolemanager:resale'])->group(function () {
     Route::prefix('pdv')->group(function () {
@@ -63,24 +64,11 @@ Route::get('/{artistSlug}/{titleSlug}', [VinylDetailsController::class, 'show'])
 Route::post('/address/store', [AddressController::class, 'store'])->name('address.store');
 
 // Rotas de autenticação com Google
-Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('auth.google.callback');
+Route::get('auth/google', [SocialiteController::class, 'redirectToProvider'])->name('auth.google')
+    ->defaults('provider', 'google');
+Route::get('auth/google/callback', [SocialiteController::class, 'handleProviderCallback'])->name('auth.google.callback')
+    ->defaults('provider', 'google');
 
-// Rota temporária para teste do Google Login
-Route::get('/test-google', function () {
-    return Socialite::driver('google')->redirect();
-});
-
-Route::get('/test-google/callback', function () {
-    try {
-        $user = Socialite::driver('google')->user();
-        dd($user); // Isso mostrará os dados do usuário
-    } catch (Exception $e) {
-        dd($e->getMessage()); // Isso mostrará qualquer erro que ocorra
-    }
-});
-
-// Rota de teste para MercadoPago
 Route::get('/test-mercadopago', function() {
     $mercadoPagoService = app(App\Services\MercadoPagoService::class);
     
@@ -172,6 +160,4 @@ require __DIR__.'/auth.php';
 require __DIR__.'/users.php';
 require __DIR__.'/checkout.php';
 require __DIR__.'/cart.php';
-
-// Rota genérica para detalhes de vinil - deve vir por último para não conflitar com outras rotas
-Route::get('/{artistSlug}/{titleSlug}', [VinylDetailsController::class, 'show'])->name('site.vinyl.show');
+require __DIR__.'/oauth.php';
