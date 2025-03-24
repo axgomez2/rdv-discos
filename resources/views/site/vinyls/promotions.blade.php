@@ -11,7 +11,7 @@
                 </button>
 
                 <div x-show="open" x-transition class="bg-slate-700 rounded-lg p-4 mb-4">
-                    <form action="{{ route('site.vinyls.index') }}" method="GET" class="space-y-4">
+                    <form action="{{ route('site.vinyls.promotions') }}" method="GET" class="space-y-4">
                         <!-- Keep search term if present -->
                         @if(request('search'))
                             <input type="hidden" name="search" value="{{ request('search') }}">
@@ -40,7 +40,7 @@
                                 </select>
                             </div>
 
-                            <!-- Price Range -->
+                            <!-- Price Range (For promotional prices) -->
                             <div>
                                 <label for="price_range" class="block text-sm font-medium text-white mb-2">Faixa de Preço</label>
                                 <div class="flex flex-col space-y-2">
@@ -93,40 +93,11 @@
                             </div>
                         </div>
 
-                        <!-- Additional Filter Options -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <!-- Show Only Promotions -->
-                            <div class="flex items-center space-x-2">
-                                <input 
-                                    type="checkbox" 
-                                    name="only_promotions" 
-                                    id="only_promotions" 
-                                    value="1" 
-                                    {{ request('only_promotions') ? 'checked' : '' }} 
-                                    class="checkbox checkbox-warning"
-                                >
-                                <label for="only_promotions" class="text-white">Mostrar apenas ofertas</label>
-                            </div>
-
-                            <!-- Include Out of Stock -->
-                            <div class="flex items-center space-x-2">
-                                <input 
-                                    type="checkbox" 
-                                    name="show_out_of_stock" 
-                                    id="show_out_of_stock" 
-                                    value="1" 
-                                    {{ request('show_out_of_stock') ? 'checked' : '' }} 
-                                    class="checkbox checkbox-warning"
-                                >
-                                <label for="show_out_of_stock" class="text-white">Incluir itens indisponíveis</label>
-                            </div>
-
-                            <!-- Apply Filters Button -->
-                            <div class="col-span-2 flex justify-end">
-                                <button type="submit" class="btn btn-warning">
-                                    <i class="fas fa-sliders-h mr-2"></i> Aplicar Filtros
-                                </button>
-                            </div>
+                        <!-- Apply Filters Button -->
+                        <div class="flex justify-end">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="fas fa-sliders-h mr-2"></i> Aplicar Filtros
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -138,10 +109,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="flex items-center justify-between mb-6">
             <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">
+                <span class="text-red-600"><i class="fas fa-tag mr-2"></i>Ofertas Especiais</span>
                 @if(request('search'))
-                    Resultados para: "{{ request('search') }}"
-                @else
-                    Todos os Discos
+                    <span class="text-lg text-gray-600"> • Resultados para: "{{ request('search') }}"</span>
                 @endif
             </h2>
             <span class="text-gray-600">{{ $vinyls->total() }} resultado(s)</span>
@@ -160,9 +130,8 @@
                                 class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
                                 onerror="this.src='{{ asset('assets/images/placeholder.jpg') }}'"
                             />
-                            @if($vinyl->vinylSec && $vinyl->vinylSec->is_promotional == 1)
-                                <div class="indicator-item indicator-start badge badge-secondary absolute top-2 left-2 text-xs">Oferta</div>
-                            @endif
+                            <div class="indicator-item indicator-start badge badge-secondary absolute top-2 left-2 text-xs">Oferta</div>
+                            
                             <button
                                 x-ref="playButton"
                                 class="play-button absolute bottom-2 right-2 btn btn-circle btn-sm btn-primary"
@@ -186,15 +155,10 @@
                             <div class="flex justify-between items-center mt-1">
                                 <div>
                                     <p class="text-xs text-gray-500">{{ $vinyl->recordLabel->name }} • {{ $vinyl->release_year }}</p>
-                                    @if($vinyl->vinylSec && $vinyl->vinylSec->quantity > 0)
-                                        @if($vinyl->vinylSec->is_promotional == 1)
-                                            <p class="text-sm font-bold text-red-600">R$ {{ number_format($vinyl->vinylSec->promotional_price, 2, ',', '.') }}</p>
-                                        @else
-                                            <p class="text-sm font-bold">R$ {{ number_format($vinyl->vinylSec->price, 2, ',', '.') }}</p>
-                                        @endif
-                                    @else
-                                        <p class="text-sm font-bold text-red-500">Indisponível</p>
-                                    @endif
+                                    <div class="flex items-center">
+                                        <p class="text-xs line-through text-gray-400 mr-2">R$ {{ number_format($vinyl->vinylSec->price, 2, ',', '.') }}</p>
+                                        <p class="text-sm font-bold text-red-600">R$ {{ number_format($vinyl->vinylSec->promotional_price, 2, ',', '.') }}</p>
+                                    </div>
                                 </div>
                                 <button
                                     type="button"
@@ -239,9 +203,9 @@
             </div>
         @else
             <div class="py-12 text-center bg-gray-50 rounded-lg">
-                <i class="fas fa-record-vinyl text-4xl text-gray-300 mb-4"></i>
-                <p class="text-lg text-gray-500">Nenhum disco encontrado com os filtros atuais.</p>
-                <a href="{{ route('site.vinyls.index') }}" class="mt-4 inline-block btn btn-outline">Limpar Filtros</a>
+                <i class="fas fa-tag text-4xl text-gray-300 mb-4"></i>
+                <p class="text-lg text-gray-500">Nenhuma oferta encontrada com os filtros atuais.</p>
+                <a href="{{ route('site.vinyls.promotions') }}" class="mt-4 inline-block btn btn-outline">Limpar Filtros</a>
             </div>
         @endif
 

@@ -669,6 +669,35 @@
                         </a>
                     </div>
                     
+                    <!-- Card do Melhor Envio -->
+                    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center">
+                                <svg class="w-8 h-8 text-purple-500 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17.73 12.02l3.98-3.98c.39-.39.39-1.02 0-1.41l-4.34-4.34c-.39-.39-1.02-.39-1.41 0l-3.98 3.98L8 2.29C7.8 2.1 7.55 2 7.29 2H3.01c-.55 0-1 .45-1 1v4.28c0 .26.1.51.29.71l3.98 3.98L2.3 16.99c-.39.39-.39 1.02 0 1.41l4.34 4.34c.39.39 1.02.39 1.41 0l3.98-3.98 3.98 3.98c.2.2.45.29.71.29h4.28c.55 0 1-.45 1-1v-4.28c0-.26-.1-.51-.29-.71l-3.98-3.98zM12 9c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm-4.71 1.96L3.66 7.34l3.63-3.63 3.62 3.62-3.62 3.63zM10 13c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"></path>
+                                </svg>
+                                <h3 class="text-lg font-semibold text-gray-900">Melhor Envio</h3>
+                            </div>
+                            
+                            <!-- Status indicator -->
+                            <span 
+                                class="px-2 py-1 text-xs font-semibold rounded-full"
+                                :class="{ 
+                                    'bg-green-100 text-green-800': '{{ isset($settings['melhorenvio_enabled']) && $settings['melhorenvio_enabled'] == 'true' }}',
+                                    'bg-red-100 text-red-800': '{{ !isset($settings['melhorenvio_enabled']) || $settings['melhorenvio_enabled'] != 'true' }}'
+                                }"
+                            >
+                                {{ isset($settings['melhorenvio_enabled']) && $settings['melhorenvio_enabled'] == 'true' ? 'Ativo' : 'Inativo' }}
+                            </span>
+                        </div>
+                        
+                        <p class="text-gray-600 mb-4">Configure a integração com o Melhor Envio para cálculo de frete e gestão de envios.</p>
+                        
+                        <a href="{{ route('admin.settings.melhorenvio') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                            Configurar
+                        </a>
+                    </div>
+                    
                     <!-- Card do MercadoEnvio -->
                     <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
                         <div class="flex items-center justify-between mb-4">

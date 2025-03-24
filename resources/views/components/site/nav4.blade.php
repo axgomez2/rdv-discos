@@ -1,4 +1,4 @@
-<nav class="bg-gray-900 border-b border-gray-800">
+<nav class="bg-slate-900 border-b border-gray-800">
     <!-- Top Navigation Bar -->
     <div class="max-w-screen-xl mx-auto px-4 py-2.5">
       <div class="flex items-center justify-between">
@@ -70,13 +70,13 @@
           @auth
           <a
               href="{{ route('site.wishlist.index') }}"
-              class="relative inline-flex items-center p-2 text-gray-500 hover:text-gray-900"
+              class="relative inline-flex items-center p-2  text-gray-300 rounded-lg hover:text-yellow-400 focus:outline-none focus:ring-2 focus:ring-yellow-400"
           >
               <i class="fa-regular fa-heart text-xl"></i>
               @if($wishlistCount > 0)
                   <span
                       data-wishlist-count
-                      class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-black bg-white border-2 border-yellw-400 rounded-full -top-2 -right-2"
+                      class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-black bg-white border-2 border-yellow-400 rounded-full -top-2 -right-2"
                   >
                       {{ $wishlistCount }}
                   </span>
@@ -103,7 +103,7 @@
               @if($cartCount > 0)
                   <span
                       data-cart-count
-                      class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2"
+                      class="absolute inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-black bg-white border-2 border-yellow-400 rounded-full -top-2 -right-2"
                   >
                       {{ $cartCount }}
                   </span>
@@ -158,14 +158,14 @@
                   x-transition:leave="transition ease-in duration-75"
                   x-transition:leave-start="transform opacity-100 scale-100"
                   x-transition:leave-end="transform opacity-0 scale-95"
-                  class="absolute right-0 z-50 w-60 mt-2 origin-top-right bg-yellow-300 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  class="absolute right-0 z-50 w-60 mt-2 origin-top-right bg-slate-100 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               >
                   <!-- User Info -->
                   <div class="px-4 py-3 border-b border-gray-100">
-                      <p class="text-sm font-semibold text-gray-900">
+                      <p class="text-sm font-semibold text-slate-800">
                           {{ Auth::user()->name }}
                       </p>
-                      <p class="text-sm text-gray-500 truncate">
+                      <p class="text-sm text-slate-700 truncate">
                           {{ Auth::user()->email }}
                       </p>
                   </div>
@@ -174,7 +174,7 @@
                   <div class="py-2">
                       <a
                           href="{{ route('site.orders.index') }}"
-                          class="flex items-center px-4 py-2 text-sm text-black hover:bg-black hover:text-yellow-400"
+                          class="flex items-center px-4 py-2 text-sm text-slate-700 hover:text-slate-900"
                       >
                           <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -197,7 +197,7 @@
 
                       <a
                           href="{{ route('site.wishlist.index') }}"
-                          class="flex items-center px-4 py-2 text-sm text-black hover:bg-black hover:text-yellow-400"
+                          class="flex items-center px-4 py-2 text-sm text-slate-700 hover:text-slate-900"
                       >
                           <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -223,7 +223,7 @@
 
                       <a
                           href="{{ route('site.wantlist.index') }}"
-                          class="flex items-center px-4 py-2 text-sm text-black hover:bg-black hover:text-yellow-400"
+                          class="flex items-center px-4 py-2 text-sm text-slate-700 hover:text-slate-900"
                       >
                           <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -251,7 +251,7 @@
                   <div class="py-2 border-t border-gray-100">
                       <a
                           href="{{ route('profile.edit') }}"
-                          class="flex items-center px-4 py-2 text-sm text-black hover:bg-black hover:text-yellow-400"
+                          class="flex items-center px-4 py-2 text-sm text-slate-700 hover:text-slate-900"
                       >
                           <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -307,7 +307,7 @@
                           @csrf
                           <button
                               type="submit"
-                              class="flex w-full items-center px-4 py-2 text-sm text-black hover:bg-black hover:text-yellow-400"
+                              class="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:text-slate-900"
                           >
                               <svg
                                   xmlns="http://www.w3.org/2000/svg"
@@ -372,12 +372,12 @@
                   x-transition:leave="transition ease-in duration-75"
                   x-transition:leave-start="transform opacity-100 scale-100"
                   x-transition:leave-end="transform opacity-0 scale-95"
-                  class="absolute right-0 z-50 w-48 mt-2 origin-top-right bg-yellow-400 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
+                  class="absolute right-0 z-50 w-48 mt-2 origin-top-right bg-slate-100 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
               >
                   <div class="py-1">
                       <button
                           @click="$dispatch('open-login-modal'); open = false"
-                          class="flex w-full items-center px-4 py-2 text-sm text-black hover:bg-black hover:text-yellow-400"
+                          class="flex w-full items-center px-4 py-2 text-sm text-slate-700 hover:text-slate-900"
                       >
                           <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -401,7 +401,7 @@
                       </button>
                       <button
                           @click="$dispatch('open-register-modal'); open = false"
-                          class="flex w-full items-center px-4 py-2 text-md text-black hover:bg-black hover:text-yellow-400"
+                          class="flex w-full items-center px-4 py-2 text-md text-slate-700 hover:text-slate-900"
                       >
                           <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -430,76 +430,93 @@
       </div>
     </div>
 
+{{-- menu pc --}}
+    <div class="border-t border-gray-200 hidden lg:block">
+        <div class="max-w-screen-xl mx-auto px-2">
+            <div class="flex items-center justify-center relative">
+                <ul class="flex flex-wrap items-center py-3 text-base font-medium text-gray-200 space-x-8">
+                    <li><a href="{{ route('site.home') }}" class="hover:text-yellow-400">Início</a></li>
 
-<!-- Menu Desktop -->
-<div class="border-t border-gray-200 hidden lg:block">
-    <div class="max-w-screen-xl mx-auto px-2">
-        <div class="flex items-center justify-center relative">
-            <ul class="flex flex-wrap items-center py-3 text-base font-medium text-gray-200 space-x-8">
-                <li><a href="{{ route('site.home') }}" class="hover:text-yellow-400">Início</a></li>
-
-                <!-- Dropdown Dinâmico para Discos -->
-                <li class="relative" x-data="{ open: false }">
-                    <button
-                        @click="open = !open"
-                        @keydown.escape.window="open = false"
-                        class="flex items-center text-base font-medium text-gray-200 hover:text-yellow-400"
-                    >
-                        <span>Discos</span>
-                        <svg
-                            class="w-4 h-4 ml-1 transition-transform duration-200"
-                            :class="{ 'rotate-180': open }"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
+                    <!-- Dropdown Dinâmico para Discos -->
+                    <li class="relative" x-data="{ open: false }">
+                        <button
+                            @click="open = !open; if(open) document.body.classList.add('mega-menu-open'); else document.body.classList.remove('mega-menu-open')"
+                            @keydown.escape.window="open = false; document.body.classList.remove('mega-menu-open')"
+                            class="flex items-center text-base font-medium text-gray-200 hover:text-yellow-400"
                         >
-                            <path
-                                fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd"
-                            />
-                        </svg>
-                    </button>
+                            <span>Discos</span>
+                            <svg
+                                class="w-4 h-4 ml-1 transition-transform duration-200"
+                                :class="{ 'rotate-180': open }"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                            >
+                                <path
+                                    fill-rule="evenodd"
+                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                    clip-rule="evenodd"
+                                />
+                            </svg>
+                        </button>
 
-                    <!-- Mega Menu -->
-                    <div
-                        x-show="open"
-                        x-cloak
-                        @click.away="open = false"
-                        x-transition:enter="transition ease-out duration-150"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        x-transition:leave="transition ease-in duration-100"
-                        x-transition:leave-start="opacity-100 scale-100"
-                        x-transition:leave-end="opacity-0 scale-95"
-                        class="absolute top-full left-0 right-0 w-screen z-50 bg-yellow-400 border border-gray-700 shadow-lg"
-                    >
-                        <div class="max-w-screen-xl mx-auto p-6">
-                            <div class="grid gap-6 lg:grid-cols-5 text-center">
-                                <a href="{{ route('site.vinyls.index') }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
-                                    VER TODOS
-                                </a>
-                                @if(isset($categories) && $categories->count())
-                                    @foreach($categories as $category)
-                                        <a href="{{ route('vinyls.byCategory', ['slug' => $category->slug]) }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
-                                            {{ $category->nome }}
-                                        </a>
-                                    @endforeach
-                                @endif
+                        <!-- Overlay Background -->
+                        <div
+                            x-show="open"
+                            x-cloak
+                            class="fixed inset-0 bg-black bg-opacity-50 z-40"
+                            @click="open = false; document.body.classList.remove('mega-menu-open')"
+                        ></div>
+
+                        <!-- Mega Menu -->
+                        <div
+                            x-show="open"
+                            x-cloak
+                            @click.away="open = false; document.body.classList.remove('mega-menu-open')"
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 scale-95"
+                            x-transition:enter-end="opacity-100 scale-100"
+                            x-transition:leave="transition ease-in duration-10"
+                            x-transition:leave-start="opacity-100 scale-100"
+                            x-transition:leave-end="opacity-0 scale-95"
+                            class="mt-20 fixed left-1/2 transform -translate-x-1/2 top-[calc(theme('spacing.16')+theme('spacing.3'))] w-screen max-w-screen-xl z-50 bg-slate-100 border border-slate-700 shadow-lg rounded-lg"
+                        >
+                            <div class="p-6">
+                                <div class="grid gap-6 lg:grid-cols-5 text-center">
+                                    <a href="{{ route('site.vinyls.index') }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                                        VER TODOS
+                                    </a>
+                                    @if(isset($categories) && $categories->count())
+                                        @foreach($categories as $category)
+                                            <a href="{{ route('vinyls.byCategory', ['slug' => $category->slug]) }}" class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5">
+                                                {{ $category->nome }}
+                                            </a>
+                                        @endforeach
+                                    @endif
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </li>
+                    </li>
 
-                <!-- Outros links -->
-                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Equipamentos</a></li>
-                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Sobre</a></li>
-                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Contato</a></li>
-                <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Ofertas</a></li>
-            </ul>
+                    <!-- Outros links -->
+                    <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Equipamentos</a></li>
+                    <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Sobre</a></li>
+                    <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Contato</a></li>
+                    <li><a href="#" class="text-base font-medium text-gray-200 hover:text-yellow-400">Ofertas</a></li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
+
+    <style>
+        [x-cloak] { display: none !important; }
+
+        body.mega-menu-open {
+            overflow: hidden;
+        }
+    </style>
+
+
 
 
 

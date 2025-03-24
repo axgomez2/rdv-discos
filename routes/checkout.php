@@ -23,3 +23,6 @@ Route::middleware(['auth'])->prefix('pagamentos')->group(function () {
 
 // Rota de webhook do Mercado Pago (não requer autenticação)
 Route::post('/mercadopago/webhook', [PaymentNotificationController::class, 'handleMercadoPagoWebhook'])->name('mercadopago.webhook');
+
+// Rota para cálculo de frete (não requer autenticação para funcionar no carrinho público)
+Route::post('/calcular-frete', [CheckoutController::class, 'calcularFrete'])->name('site.checkout.calcular-frete');

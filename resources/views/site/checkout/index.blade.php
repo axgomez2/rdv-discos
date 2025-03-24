@@ -36,7 +36,7 @@
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
                     <span>Frete</span>
-                    <strong>R$ {{ number_format($shippingCost, 2, ',', '.') }}</strong>
+                    <strong class="shipping-cost">R$ {{ number_format($shippingCost, 2, ',', '.') }}</strong>
                 </li>
                 <li class="list-group-item d-flex justify-content-between">
                     <span>Impostos</span>
@@ -44,7 +44,7 @@
                 </li>
                 <li class="list-group-item d-flex justify-content-between bg-light">
                     <span class="text-success">Total</span>
-                    <strong class="text-success">R$ {{ number_format($total, 2, ',', '.') }}</strong>
+                    <strong class="order-total text-success">R$ {{ number_format($total, 2, ',', '.') }}</strong>
                 </li>
             </ul>
         </div>
@@ -55,28 +55,100 @@
                 @csrf
                 <input type="hidden" name="card_token" id="card_token" value="">
                 <input type="hidden" name="sender_hash" id="sender_hash" value="">
+                <input type="hidden" name="shipping_option" id="shipping_option" value="{{ session('shipping_method') }}">
 
-                <!-- Endereço de Entrega -->
-                <h4 class="mb-3">Endereço de Entrega</h4>
-                @if(auth()->user()->addresses->count() > 0)
-                    <div class="mb-3">
-                        <select class="form-control" name="shipping_address_id" required>
-                            <option value="">Selecione um endereço...</option>
-                            @foreach(auth()->user()->addresses as $address)
-                                <option value="{{ $address->id }}" {{ $address->is_default ? 'selected' : '' }}>
-                                    {{ $address->street }}, {{ $address->number }} - {{ $address->neighborhood }}, {{ $address->city }}/{{ $address->state }} - CEP: {{ $address->zip_code }}
-                                </option>
-                            @endforeach
+                <!-- Informações de Entrega -->
+                <h4 class="mb-3">Informações de Entrega</h4>
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label for="endereco">Endereço</label>
+                        <input type="text" class="form-control" id="endereco" name="endereco" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="numero">Número</label>
+                        <input type="text" class="form-control" id="numero" name="numero" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" class="form-control" id="complemento" name="complemento">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" class="form-control" id="bairro" name="bairro" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" class="form-control" id="cidade" name="cidade" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="estado">Estado</label>
+                        <select class="form-control" id="estado" name="estado" required>
+                            <option value="">Selecione...</option>
+                            <option value="AC">Acre</option>
+                            <option value="AL">Alagoas</option>
+                            <option value="AP">Amapá</option>
+                            <option value="AM">Amazonas</option>
+                            <option value="BA">Bahia</option>
+                            <option value="CE">Ceará</option>
+                            <option value="DF">Distrito Federal</option>
+                            <option value="ES">Espírito Santo</option>
+                            <option value="GO">Goiás</option>
+                            <option value="MA">Maranhão</option>
+                            <option value="MT">Mato Grosso</option>
+                            <option value="MS">Mato Grosso do Sul</option>
+                            <option value="MG">Minas Gerais</option>
+                            <option value="PA">Pará</option>
+                            <option value="PB">Paraíba</option>
+                            <option value="PR">Paraná</option>
+                            <option value="PE">Pernambuco</option>
+                            <option value="PI">Piauí</option>
+                            <option value="RJ">Rio de Janeiro</option>
+                            <option value="RN">Rio Grande do Norte</option>
+                            <option value="RS">Rio Grande do Sul</option>
+                            <option value="RO">Rondônia</option>
+                            <option value="RR">Roraima</option>
+                            <option value="SC">Santa Catarina</option>
+                            <option value="SP">São Paulo</option>
+                            <option value="SE">Sergipe</option>
+                            <option value="TO">Tocantins</option>
                         </select>
                     </div>
-                    <div class="mb-3">
-                        <a href="{{ route('site.profile.addresses.create') }}" class="btn btn-outline-secondary btn-sm">Adicionar Novo Endereço</a>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="cep">CEP</label>
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="cep" name="cep" placeholder="00000-000" required>
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-secondary" id="calcular-frete">Calcular Frete</button>
+                            </div>
+                        </div>
+                        <small class="text-muted">Digite apenas números</small>
                     </div>
-                @else
-                    <div class="alert alert-warning">
-                        Você não possui endereços cadastrados. <a href="{{ route('site.profile.addresses.create') }}">Cadastre um endereço</a> para continuar.
+                </div>
+
+                <!-- Opções de Envio -->
+                <div class="mb-4" id="opcoes-frete">
+                    <h5 class="mb-3">Opções de Envio</h5>
+                    <div class="alert alert-info d-none" id="calculando-frete">
+                        <i class="fas fa-spinner fa-spin"></i> Calculando opções de frete...
                     </div>
-                @endif
+                    <div class="alert alert-warning d-none" id="erro-frete">
+                        Não foi possível calcular o frete. Verifique se o CEP está correto.
+                    </div>
+                    
+                    <!-- As opções de frete serão carregadas aqui via JavaScript -->
+                    <div id="lista-opcoes-frete" class="d-none">
+                        <!-- Template para opções de frete -->
+                    </div>
+                </div>
 
                 <!-- Método de Pagamento -->
                 <h4 class="mb-3">Método de Pagamento</h4>
@@ -195,13 +267,151 @@
 @push('scripts')
 <!-- Script do PagSeguro -->
 <script type="text/javascript" src="{{ config('pagseguro.sandbox') ? 'https://stc.sandbox.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js' : 'https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js' }}"></script>
+<!-- Script do MercadoPago -->
+<script src="https://sdk.mercadopago.com/js/v2"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Inicialização do PagSeguro
-        PagSeguroDirectPayment.setSessionId('{{ $sessionId }}');
+        PagSeguroDirectPayment.setSessionId('{{ $pagSeguroSessionId }}');
 
-        // Elementos do formulário
+        // Elementos do formulário de frete
+        const cepInput = document.getElementById('cep');
+        const calcularFreteBtn = document.getElementById('calcular-frete');
+        const calculandoFreteAlert = document.getElementById('calculando-frete');
+        const erroFreteAlert = document.getElementById('erro-frete');
+        const listaOpcoesFrete = document.getElementById('lista-opcoes-frete');
+        const shippingOptionInput = document.getElementById('shipping_option');
+        
+        // Formatar input de CEP
+        cepInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 8) value = value.substring(0, 8);
+            if (value.length > 5) {
+                value = value.substring(0, 5) + '-' + value.substring(5);
+            }
+            e.target.value = value;
+        });
+        
+        // Calcular frete quando clicar no botão
+        calcularFreteBtn.addEventListener('click', function() {
+            const cep = cepInput.value.replace(/\D/g, '');
+            
+            if (cep.length !== 8) {
+                alert('Por favor, digite um CEP válido com 8 dígitos.');
+                return;
+            }
+            
+            // Mostrar loading
+            calculandoFreteAlert.classList.remove('d-none');
+            listaOpcoesFrete.classList.add('d-none');
+            erroFreteAlert.classList.add('d-none');
+            
+            // Fazer requisição para o backend
+            fetch('{{ route("site.checkout.calcular-frete") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    cep: cep
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Esconder loading
+                calculandoFreteAlert.classList.add('d-none');
+                
+                if (!data.success || !data.options || Object.keys(data.options).length === 0) {
+                    erroFreteAlert.classList.remove('d-none');
+                    return;
+                }
+                
+                // Limpar e mostrar opções de frete
+                listaOpcoesFrete.innerHTML = '';
+                listaOpcoesFrete.classList.remove('d-none');
+                
+                // Adicionar cada opção de frete como um radio button
+                Object.keys(data.options).forEach(key => {
+                    const option = data.options[key];
+                    const optionDiv = document.createElement('div');
+                    optionDiv.className = 'form-check mb-2 p-2 border rounded';
+                    
+                    const radioInput = document.createElement('input');
+                    radioInput.type = 'radio';
+                    radioInput.className = 'form-check-input';
+                    radioInput.name = 'frete_option';
+                    radioInput.id = 'frete_' + key;
+                    radioInput.value = key;
+                    radioInput.dataset.price = option.price;
+                    
+                    // Se tiver um método já selecionado na sessão, selecionar ele
+                    if (key === '{{ session("shipping_method") }}') {
+                        radioInput.checked = true;
+                    }
+                    
+                    radioInput.addEventListener('change', function() {
+                        // Atualizar valor do frete no resumo do pedido
+                        document.querySelector('.shipping-cost').innerText = 'R$ ' + option.price.toFixed(2).replace('.', ',');
+                        
+                        // Atualizar valor total
+                        const subtotal = parseFloat('{{ $subtotal }}');
+                        const tax = parseFloat('{{ $tax }}');
+                        const total = subtotal + option.price + tax;
+                        document.querySelector('.order-total').innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
+                        
+                        // Atualizar o input hidden
+                        shippingOptionInput.value = key;
+                        
+                        // Salvar a opção selecionada via AJAX
+                        fetch('{{ route("site.checkout.calcular-frete") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                cep: cep,
+                                selected_method: key
+                            })
+                        });
+                    });
+                    
+                    const label = document.createElement('label');
+                    label.className = 'form-check-label';
+                    label.htmlFor = 'frete_' + key;
+                    label.innerHTML = `
+                        <strong>${option.name}</strong> - ${option.company} <br>
+                        <span class="text-muted">Entrega em ${option.delivery_time} dia(s) úteis</span>
+                        <span class="badge badge-success float-right">R$ ${option.price.toFixed(2).replace('.', ',')}</span>
+                    `;
+                    
+                    optionDiv.appendChild(radioInput);
+                    optionDiv.appendChild(label);
+                    listaOpcoesFrete.appendChild(optionDiv);
+                });
+                
+                // Se não tiver nenhuma opção selecionada, selecionar a primeira
+                if (!document.querySelector('input[name="frete_option"]:checked') && listaOpcoesFrete.children.length > 0) {
+                    const firstOption = document.querySelector('input[name="frete_option"]');
+                    firstOption.checked = true;
+                    firstOption.dispatchEvent(new Event('change'));
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao calcular frete:', error);
+                calculandoFreteAlert.classList.add('d-none');
+                erroFreteAlert.classList.remove('d-none');
+            });
+        });
+        
+        // Se já tiver um CEP preenchido, calcular o frete automaticamente
+        if (cepInput.value && cepInput.value.replace(/\D/g, '').length === 8) {
+            calcularFreteBtn.click();
+        }
+        
+        // Elementos do formulário de pagamento
         const paymentForm = document.getElementById('payment-form');
         const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
         const cardDetails = document.getElementById('credit-card-details');

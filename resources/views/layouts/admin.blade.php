@@ -169,8 +169,9 @@
                               {{ request()->routeIs('admin.settings.*') ? 'bg-gray-100' : 'hover:bg-gray-100' }}">
                         <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
                              aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                             fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 2a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-15a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1zm7-7a1 1 0 0 1-1 1h-2a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1zM3 12a1 1 0 0 1 1-1h2a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1z"/>
+                             fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4a1 1 0 011-1z" />
+                            <path d="M11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 11-2 0V8.732a2 2 0 000-3.464V4z" />
                         </svg>
                         <span class="ml-3">Configurações</span>
                     </a>
@@ -198,7 +199,7 @@
                         <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
                              aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                              fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                            <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm0 2a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-15a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v2a1 1 0 0 1-2 0v-2a1 1 0 0 1 1-1zm7-7a1 1 0 0 1-1 1h-2a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1zM3 12a1 1 0 0 1 1-1h2a1 1 0 0 1 0 2H4a1 1 0 0 1-1-1z"/>
                         </svg>
                         <span class="ml-3">Clientes</span>
                     </a>
@@ -212,7 +213,7 @@
                         <svg class="w-5 h-5 text-gray-500 transition duration-75 group-hover:text-gray-900"
                              aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                              fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M10 3H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zm10 0h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1zM10 13H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1zm10 0h-6a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1z"/>
+                            <path d="M10 3H4a1 1 0 00-1 1v6a1 1 0 00 1 1h6a1 1 0 00 1-1V4a1 1 0 00-1-1zm10 0h-6a1 1 0 00-1 1v6a1 1 0 00 1 1h6a1 1 0 00 1-1V4a1 1 0 00-1-1zM10 13H4a1 1 0 00-1 1v6a1 1 0 00 1 1h6a1 1 0 00 1-1v-6a1 1 0 00-1-1zm10 0h-6a1 1 0 00-1 1v6a1 1 0 00 1 1h6a1 1 0 00 1-1v-6a1 1 0 00-1-1z"/>
                         </svg>
                         <span class="ml-3">Categorias Internas</span>
                     </a>

@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified', 'rolemanager:resale'])->group(function ()
 // Site Routes
 Route::get('/', [HomeController::class, 'index'])->name('site.home');
 Route::get('/discos', [VinylWebController::class, 'index'])->name('site.vinyls.index');
+Route::get('/discos/promocoes', [VinylWebController::class, 'promotions'])->name('site.vinyls.promotions');
 Route::get('/busca', [SearchController::class, 'index'])->name('site.search');
 // Route::get('/djcharts', [ChartDjsController::class, 'index'])->name('site.djcharts.index');
 // Route::get('/djcharts/{dj:slug}', [ChartDjsController::class, 'show'])->name('site.djcharts.show');
@@ -171,5 +172,6 @@ require __DIR__.'/auth.php';
 require __DIR__.'/users.php';
 require __DIR__.'/checkout.php';
 require __DIR__.'/cart.php';
+
 // Rota genérica para detalhes de vinil - deve vir por último para não conflitar com outras rotas
 Route::get('/{artistSlug}/{titleSlug}', [VinylDetailsController::class, 'show'])->name('site.vinyl.show');

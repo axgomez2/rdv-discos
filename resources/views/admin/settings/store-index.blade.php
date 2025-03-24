@@ -124,6 +124,24 @@
                     </a>
                 </div>
             </div>
+
+            <!-- Mercado Envio Card -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-medium text-gray-900">Mercado Envio</h3>
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ isset($settings['mercadoenvio_enabled']) && $settings['mercadoenvio_enabled'] == 'true' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                            {{ isset($settings['mercadoenvio_enabled']) && $settings['mercadoenvio_enabled'] == 'true' ? 'Ativo' : 'Inativo' }}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">
+                        Configure a integração com o Mercado Envio para envio dos produtos vendidos no Mercado Livre.
+                    </p>
+                    <a href="{{ route('admin.settings.mercadoenvio') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                        Configurar
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 

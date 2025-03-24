@@ -1,66 +1,127 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RDV Discos
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+E-commerce application for record store with integrated shipping options.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Product catalog and management
+- Shopping cart and checkout process
+- User account management
+- Admin panel for store management
+- Integrated shipping via:
+  - Melhor Envio
+  - Mercado Envio
+  - Correios
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.1+
+- Composer
+- MySQL 5.7+ or MariaDB 10.3+
+- Node.js and npm
+- Web server (Apache/Nginx)
 
-## Learning Laravel
+## Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/axgomez2/rdv-discos.git
+   cd rdv-discos
+   ```
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+2. Install PHP dependencies:
+   ```bash
+   composer install
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+3. Install JavaScript dependencies:
+   ```bash
+   npm install
+   ```
 
-## Laravel Sponsors
+4. Copy the environment file:
+   ```bash
+   cp .env.example .env
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+5. Configure your database and API keys in the `.env` file
 
-### Premium Partners
+6. Generate application key:
+   ```bash
+   php artisan key:generate
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+7. Run migrations and seed the database:
+   ```bash
+   php artisan migrate --seed
+   ```
 
-## Contributing
+8. Build frontend assets:
+   ```bash
+   npm run build
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+9. Create symbolic link for storage:
+   ```bash
+   php artisan storage:link
+   ```
 
-## Code of Conduct
+## Shipping Integration Setup
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Melhor Envio
+1. Register at [Melhor Envio](https://melhorenvio.com.br/)
+2. Create an application in the developer section
+3. Set the following in your `.env` file:
+   ```
+   MELHORENVIO_CLIENT_ID=your_client_id
+   MELHORENVIO_CLIENT_SECRET=your_client_secret
+   MELHORENVIO_TOKEN=your_token
+   MELHORENVIO_SANDBOX=true
+   ```
+4. Configure your shipping address information in the `.env` file
 
-## Security Vulnerabilities
+### MercadoPago
+1. Register at [MercadoPago](https://www.mercadopago.com.br/)
+2. Configure your `.env` file with the MercadoPago credentials
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## VPS Deployment
+
+### Server Requirements
+- Ubuntu 20.04 LTS or later
+- Nginx or Apache
+- PHP 8.1+
+- MySQL/MariaDB
+- Composer
+- Node.js and npm
+
+### Deployment Steps
+
+1. Set up your web server configuration
+2. Clone the repository to your server
+3. Follow the installation steps above
+4. Configure your web server to point to the public directory
+5. Set up SSL certificates (recommended)
+6. Configure the proper file permissions:
+   ```bash
+   sudo chown -R www-data:www-data storage bootstrap/cache
+   sudo chmod -R 775 storage bootstrap/cache
+   ```
+
+7. Configure a queue worker for background jobs (optional):
+   ```bash
+   php artisan queue:work --daemon
+   ```
+
+## Development
+
+```bash
+# Run development server
+php artisan serve
+
+# Watch for changes in development
+npm run dev
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT

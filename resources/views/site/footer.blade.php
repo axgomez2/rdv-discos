@@ -1,58 +1,46 @@
-<footer class=" font-sans tracking-wide bg-white px-10 pt-12 pb-6">
+<footer class=" font-sans tracking-wide bg-slate-900 px-10 pt-12 pb-6">
     <div class="max-w-7xl mx-auto px-4  flex flex-wrap justify-between gap-10">
       <div class="max-w-md">
         <a href='javascript:void(0)'>
           <img src="{{ asset('assets/images/logo.png') }}" alt="RDV DISCOS" class='w-40' />
         </a>
         <div class="mt-6">
-          <p class="text-gray-900 leading-relaxed text-sm">Rua Montevideu - 174 </p>
-          <p class="text-gray-900 leading-relaxed text-sm">Utinga - Santo André - SP</p>
-          <p class="text-gray-900 leading-relaxed text-sm">Cep:  09220-360 </p>
-          <p class="text-gray-900 leading-relaxed text-sm">Cnpj: 74.681.826/0001-08 </p>
+          <p class="text-slate-300 leading-relaxed text-sm">Rua Montevideu - 174 </p>
+          <p class="text-slate-300 leading-relaxed text-sm">Utinga - Santo André - SP</p>
+          <p class="text-slate-300 leading-relaxed text-sm">Cep:  09220-360 </p>
+          <p class="text-slate-300 leading-relaxed text-sm">Cnpj: 74.681.826/0001-08 </p>
         </div>
         <ul class="mt-10 flex space-x-5">
             <li>
               <a href='javascript:void(0)'>
-                <svg xmlns="http://www.w3.org/2000/svg" class="fill-blue-600 w-8 h-8" viewBox="0 0 49.652 49.652">
-                  <path d="M24.826 0C11.137 0 0 11.137 0 24.826c0 13.688 11.137 24.826 24.826 24.826 13.688 0 24.826-11.138 24.826-24.826C49.652 11.137 38.516 0 24.826 0zM31 25.7h-4.039v14.396h-5.985V25.7h-2.845v-5.088h2.845v-3.291c0-2.357 1.12-6.04 6.04-6.04l4.435.017v4.939h-3.219c-.524 0-1.269.262-1.269 1.386v2.99h4.56z" data-original="#000000" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="fill-blue-500 w-8 h-8" viewBox="0 0 49.652 49.652">
+                    <path d="M24.826 0C11.137 0 0 11.137 0 24.826c0 13.688 11.137 24.826 24.826 24.826 13.688 0 24.826-11.138 24.826-24.826C49.652 11.137 38.516 0 24.826 0zM31 25.7h-4.039v14.396h-5.985V25.7h-2.845v-5.088h2.845v-3.291c0-2.357 1.12-6.04 6.04-6.04l4.435.017v4.939h-3.219c-.524 0-1.269.262-1.269 1.386v2.99h4.56z" />
+                  </svg>
               </a>
             </li>
             <li>
               <a href='javascript:void(0)'>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 152 152">
-                  <linearGradient id="a" x1="22.26" x2="129.74" y1="22.26" y2="129.74" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#fae100" />
-                    <stop offset=".15" stop-color="#fcb720" />
-                    <stop offset=".3" stop-color="#ff7950" />
-                    <stop offset=".5" stop-color="#ff1c74" />
-                    <stop offset="1" stop-color="#6c1cd1" />
-                  </linearGradient>
-                  <g data-name="Layer 2">
-                    <g data-name="03.Instagram">
-                      <rect width="152" height="152" fill="url(#a)" data-original="url(#a)" rx="76" />
-                      <g fill="#fff">
-                        <path fill="#ffffff10" d="M133.2 26c-11.08 20.34-26.75 41.32-46.33 60.9S46.31 122.12 26 133.2q-1.91-1.66-3.71-3.46A76 76 0 1 1 129.74 22.26q1.8 1.8 3.46 3.74z" data-original="#ffffff10" />
-                        <path d="M94 36H58a22 22 0 0 0-22 22v36a22 22 0 0 0 22 22h36a22 22 0 0 0 22-22V58a22 22 0 0 0-22-22zm15 54.84A18.16 18.16 0 0 1 90.84 109H61.16A18.16 18.16 0 0 1 43 90.84V61.16A18.16 18.16 0 0 1 61.16 43h29.68A18.16 18.16 0 0 1 109 61.16z" data-original="#ffffff" />
-                        <path d="m90.59 61.56-.19-.19-.16-.16A20.16 20.16 0 0 0 76 55.33 20.52 20.52 0 0 0 55.62 76a20.75 20.75 0 0 0 6 14.61 20.19 20.19 0 0 0 14.42 6 20.73 20.73 0 0 0 14.55-35.05zM76 89.56A13.56 13.56 0 1 1 89.37 76 13.46 13.46 0 0 1 76 89.56zm26.43-35.18a4.88 4.88 0 0 1-4.85 4.92 4.81 4.81 0 0 1-3.42-1.43 4.93 4.93 0 0 1 3.43-8.39 4.82 4.82 0 0 1 3.09 1.12l.1.1a3.05 3.05 0 0 1 .44.44l.11.12a4.92 4.92 0 0 1 1.1 3.12z" data-original="#ffffff" />
-                      </g>
-                    </g>
-                  </g>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="fill-pink-500 w-8 h-8" viewBox="0 0 49.652 49.652">
+                    <path d="M24.825 29.796c2.739 0 4.972-2.229 4.972-4.97 0-1.082-.354-2.081-.94-2.897-.903-1.252-2.371-2.073-4.029-2.073-1.659 0-3.126.82-4.031 2.072-.588.816-.939 1.815-.94 2.897 0 2.741 2.23 4.971 4.968 4.971zm.003-13.149c4.5 0 8.178 3.698 8.178 8.247 0 4.548-3.678 8.248-8.178 8.248-4.502 0-8.18-3.7-8.18-8.248 0-4.549 3.678-8.247 8.18-8.247zm8.146-4.773c0 1.059.86 1.92 1.92 1.92 1.057 0 1.92-.861 1.92-1.92 0-1.058-.863-1.92-1.92-1.92-1.06 0-1.92.862-1.92 1.92zm-14.042-3.272h11.774c6.661 0 12.105 5.444 12.105 12.105v11.774c0 6.661-5.444 12.105-12.105 12.105H18.932c-6.66 0-12.105-5.444-12.105-12.105V20.707c0-6.661 5.442-12.105 12.105-12.105zm11.827 30.52c5.057 0 9.154-4.097 9.154-9.154V20.707c0-5.057-4.097-9.154-9.154-9.154H18.932c-5.057 0-9.154 4.097-9.154 9.154v11.261c0 5.057 4.097 9.154 9.154 9.154h11.827z" />
+                    <path d="M24.826 0C11.137 0 0 11.137 0 24.826c0 13.688 11.137 24.826 24.826 24.826 13.688 0 24.826-11.138 24.826-24.826C49.652 11.137 38.516 0 24.826 0zm14.119 32.792c0 7.27-5.901 13.171-13.17 13.171H18.877c-7.27 0-13.171-5.901-13.171-13.171V20.655c0-7.27 5.901-13.171 13.171-13.171h6.898c7.269 0 13.17 5.901 13.17 13.171v12.137z" />
+                  </svg>
               </a>
             </li>
             <li>
               <a href='javascript:void(0)'>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 461.001 461.001">
-                  <path fill="#F61C0D" d="M365.257 67.393H95.744C42.866 67.393 0 110.259 0 163.137v134.728c0 52.878 42.866 95.744 95.744 95.744h269.513c52.878 0 95.744-42.866 95.744-95.744V163.137c0-52.878-42.866-95.744-95.744-95.744zm-64.751 169.663-126.06 60.123c-3.359 1.602-7.239-.847-7.239-4.568V168.607c0-3.774 3.982-6.22 7.348-4.514l126.06 63.881c3.748 1.899 3.683 7.274-.109 9.082z"/>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="fill-cyan-300 w-8 h-8" viewBox="0 0 49.652 49.652">
+                    <path d="M24.826 0C11.137 0 0 11.137 0 24.826c0 13.688 11.137 24.826 24.826 24.826 13.688 0 24.826-11.138 24.826-24.826C49.652 11.137 38.516 0 24.826 0z" />
+                    <path d="M31.956 18.982c1.922 1.39 4.275 2.212 6.823 2.212v-4.917c-.48.001-.96-.047-1.431-.141v3.475c-2.548 0-4.9-.822-6.823-2.212v10.127c0 5.067-4.108 9.175-9.175 9.175-1.88 0-3.631-.567-5.084-1.539 1.658 1.696 3.961 2.746 6.508 2.746 5.067 0 9.175-4.108 9.175-9.175v-10.126h.007zm2.983-2.64a7.2 7.2 0 01-1.354-2.341v-.001h-1.049a7.207 7.207 0 002.403 2.342zm-16.013 14.93a4.339 4.339 0 01-.553-2.119c0-2.396 1.945-4.34 4.341-4.34.758 0 1.471.196 2.093.538a4.337 4.337 0 00-3.51-1.787c-2.396 0-4.341 1.944-4.341 4.34 0 1.332.602 2.523 1.546 3.319.142.115.29.22.424.049z" fill="#ffffff" />
+                    <path d="M30.525 16.341v-.001c.393.852.982 1.61 1.729 2.211 1.922 1.39 4.275 2.212 6.823 2.212v-3.475a7.207 7.207 0 01-2.403-2.342h-4.751c0 .47-.049.929-.141 1.374-.028.133-.06.266-.095.397-.054.21-.116.416-.186.617-.023.068-.048.135-.073.202a7.134 7.134 0 01-.903 1.805zm1.431 2.641v10.127c0 5.067-4.108 9.175-9.175 9.175-2.547 0-4.85-1.05-6.508-2.746a9.144 9.144 0 01-2.667-6.429c0-5.066 4.108-9.175 9.175-9.175.83 0 1.633.111 2.398.317v-4.953c-.48-.044-.964-.068-1.455-.068-8.572 0-15.519 6.947-15.519 15.519 0 4.547 1.956 8.636 5.066 11.479 2.585 2.366 6.022 3.814 9.798 3.814 8.572 0 15.519-6.947 15.519-15.519V18.434c-1.883-1.346-3.443-3.127-4.501-5.18-.069.134-.145.264-.22.393-.264.456-.56.881-.881 1.273-.059.072-.12.143-.181.213-.226.255-.462.5-.713.729-.08.073-.162.142-.244.213-.235.204-.48.398-.733.577-.107.076-.215.149-.325.221-.267.168-.543.327-.827.466-.133.066-.268.127-.404.189-.285.129-.577.249-.875.357-.125.045-.252.086-.379.127-.377.12-.762.228-1.158.309-.07.014-.141.033-.212.046-.468.09-.943.151-1.426.178-.08.005-.16.015-.241.018-.5.021-1.003.02-1.508-.01-.069-.004-.138-.01-.207-.015a15.334 15.334 0 01-1.41-.175c-.072-.013-.143-.032-.215-.046-.396-.081-.781-.189-1.158-.309-.127-.04-.254-.082-.38-.127a15.243 15.243 0 01-.874-.357c-.136-.062-.271-.123-.404-.189-.284-.14-.56-.298-.827-.466-.11-.072-.218-.145-.326-.221a14.628 14.628 0 01-.732-.577c-.082-.071-.164-.14-.244-.213-.251-.229-.487-.474-.713-.729-.061-.07-.122-.141-.181-.213a14.7 14.7 0 01-.881-1.273 14.696 14.696 0 01-.22-.393c-.169-.33-.329-.67-.474-1.02-.055-.133-.104-.268-.155-.403-.129-.339-.25-.683-.359-1.035-.037-.12-.073-.24-.107-.361a15.57 15.57 0 01-.533-2.488c-.007-.068-.011-.137-.018-.205-.035-.409-.06-.822-.06-1.24 0-8.572 6.947-15.519 15.519-15.519 8.572 0 15.519 6.947 15.519 15.519 0 .418-.025.831-.06 1.24-.007.068-.011.137-.018.205a15.57 15.57 0 01-.533 2.488c-.034.121-.07.241-.107.361-.109.352-.23.696-.359 1.035-.051.135-.1.27-.155.403-.145.35-.305.69-.474 1.02z" fill="#ffffff" />
+                  </svg>
               </a>
             </li>
             <li>
               <a href='javascript:void(0)'>
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 512 512">
-                  <path fill="#00F2EA" d="M412.19,118.66a109.27,109.27,0,0,1-9.45-5.5,132.87,132.87,0,0,1-24.27-20.62c-18.1-20.71-24.86-41.72-27.35-56.43h.1C349.14,23.9,350,16,350.13,16H267.69V334.78c0,4.28,0,8.51-.18,12.69,0,.52-.05,1-.08,1.56,0,.23,0,.47-.05.71,0,.06,0,.12,0,.18a70,70,0,0,1-35.22,55.56,68.8,68.8,0,0,1-34.11,9c-38.41,0-69.54-31.32-69.54-70s31.13-70,69.54-70a68.9,68.9,0,0,1,21.41,3.39l.1-83.94a153.14,153.14,0,0,0-118,34.52,161.79,161.79,0,0,0-35.3,43.53c-3.48,6-16.61,30.11-18.2,69.24-1,22.21,5.67,45.22,8.85,54.73v.2c2,5.6,9.75,24.71,22.38,40.82A167.53,167.53,0,0,0,115,470.66v-.2l.2.2C155.11,497.78,199.36,496,199.36,496c7.66-.31,33.32,0,62.46-13.81,32.32-15.31,50.72-38.12,50.72-38.12a158.46,158.46,0,0,0,27.64-45.93c7.46-19.61,9.95-43.13,9.95-52.53V176.49c1,.6,14.32,9.41,14.32,9.41s19.19,12.3,49.13,20.31c21.48,5.7,50.42,6.9,50.42,6.9V131.27C453.86,132.37,433.27,129.17,412.19,118.66Z"/>
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="fill-red-500 w-8 h-8" viewBox="0 0 49.652 49.652">
+                    <path d="M24.826 0C11.137 0 0 11.137 0 24.826c0 13.688 11.137 24.826 24.826 24.826 13.688 0 24.826-11.138 24.826-24.826C49.652 11.137 38.516 0 24.826 0zm13.901 28.292c-.133 1.439-.493 2.853-1.471 3.401-1.787.999-9.057 1.057-12.43 1.057-3.37 0-10.825-.149-12.563-1.057-.977-.547-1.338-1.962-1.471-3.401-.151-1.629-.2-3.311-.2-4.968 0-1.657.048-3.339.2-4.969.133-1.438.494-2.853 1.471-3.4 1.738-.908 9.193-1.057 12.563-1.057 3.373 0 10.643.058 12.43 1.057.978.547 1.338 1.962 1.471 3.4.152 1.63.2 3.312.2 4.969 0 1.657-.048 3.339-.2 4.968z" />
+                    <path d="M21.029 27.688l8.901-4.639-8.901-4.64z" fill="#ffffff" />
+                  </svg>
               </a>
             </li>
           </ul>
@@ -60,20 +48,20 @@
       </div>
 
       <div class="max-lg:min-w-[140px]">
-        <h4 class="text-gray-800 font-semibold text-base relative max-sm:cursor-pointer">Loja</h4>
+        <h4 class="text-slate-300 font-semibold text-base relative max-sm:cursor-pointer">Loja</h4>
 
         <ul class="mt-6 space-y-4">
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Inicio</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Inicio</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Todos os Discos</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Todos os Discos</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Equipamentos</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Equipamentos</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Promoções</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Promoções</a>
           </li>
 
         </ul>
@@ -82,43 +70,43 @@
 
 
       <div class="max-lg:min-w-[140px]">
-        <h4 class="text-gray-800 font-semibold text-base relative max-sm:cursor-pointer">Sobre RDV DISCOS</h4>
+        <h4 class="text-slate-300 font-semibold text-base relative max-sm:cursor-pointer">Sobre RDV DISCOS</h4>
 
         <ul class="space-y-4 mt-6">
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Sobre</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Sobre</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Influencias</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Influencias</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Eventos</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Eventos</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Catalogo</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Catalogo</a>
           </li>
 
         </ul>
       </div>
 
       <div class="max-lg:min-w-[140px]">
-        <h4 class="text-gray-800 font-semibold text-base relative max-sm:cursor-pointer">Informações </h4>
+        <h4 class="text-slate-100 font-semibold text-base relative max-sm:cursor-pointer">Informações </h4>
 
         <ul class="space-y-4 mt-6">
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>FAQ</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>FAQ</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Como Comprar</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Como Comprar</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Politica de trocas</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Politica de trocas</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Grupo de Compras</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Grupo de Compras</a>
           </li>
           <li>
-            <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Fretes e Tarifas</a>
+            <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Fretes e Tarifas</a>
           </li>
         </ul>
       </div>
@@ -129,17 +117,17 @@
     <div class="flex flex-wrap max-md:flex-col gap-4">
       <ul class="md:flex md:space-x-6 max-md:space-y-2">
         <li>
-          <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Termos de serviço</a>
+          <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Termos de serviço</a>
         </li>
         <li>
-          <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Privacy Policy</a>
+          <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Privacy Policy</a>
         </li>
         <li>
-          <a href='javascript:void(0)' class='hover:text-gray-800 text-gray-900 text-sm'>Segurança</a>
+          <a href='javascript:void(0)' class='hover:text-slate-100 text-slate-300 text-sm'>Segurança</a>
         </li>
       </ul>
 
-      <p class='text-gray-600 text-sm md:ml-auto'>RDV DISCOS © GOCOM COMUNICAÇÂO. todos os direitos reservados. - protectd by XELA SEMOG</p>
+      <p class='text-slate-100 text-sm md:ml-auto'>RDV DISCOS © GOCOM COMUNICAÇÂO. todos os direitos reservados. - protectd by XELA SEMOG</p>
     </div>
 
 

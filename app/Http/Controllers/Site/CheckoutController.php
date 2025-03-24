@@ -13,21 +13,26 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use App\Services\MelhorEnvioService;
+use App\Models\Address;
 
 class CheckoutController extends Controller
 {
     protected $mercadoPagoService;
     protected $pagSeguroService;
     protected $systemSettings;
+    protected $melhorEnvioService;
 
     public function __construct(
         MercadoPagoService $mercadoPagoService,
         PagSeguroService $pagSeguroService,
-        SystemSettingsService $systemSettings
+        SystemSettingsService $systemSettings,
+        MelhorEnvioService $melhorEnvioService
     ) {
         $this->mercadoPagoService = $mercadoPagoService;
         $this->pagSeguroService = $pagSeguroService;
         $this->systemSettings = $systemSettings;
+        $this->melhorEnvioService = $melhorEnvioService;
     }
 
     public function index(Request $request)
@@ -109,7 +114,14 @@ class CheckoutController extends Controller
     {
         // Validação rigorosa dos dados de entrada
         $validator = Validator::make($request->all(), [
-            'shipping_address_id' => 'required|exists:addresses,id',
+            'endereco' => 'required|string|max:255',
+            'numero' => 'required|string|max:20',
+            'complemento' => 'nullable|string|max:255',
+            'bairro' => 'required|string|max:255',
+            'cidade' => 'required|string|max:255',
+            'estado' => 'required|string|size:2',
+            'cep' => 'required|string|size:9',
+            'shipping_option' => 'required|string',
             'payment_gateway' => ['required', 'string', Rule::in(['mercadopago', 'pagseguro'])],
             'payment_method' => ['required', 'string', Rule::in(['credit_card', 'boleto', 'pix'])],
             'notes' => 'nullable|string|max:500',
@@ -123,6 +135,13 @@ class CheckoutController extends Controller
                 'regex:/^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/',
             ],
         ], [
+            'endereco.required' => 'O endereço é obrigatório.',
+            'numero.required' => 'O número é obrigatório.',
+            'bairro.required' => 'O bairro é obrigatório.',
+            'cidade.required' => 'A cidade é obrigatória.',
+            'estado.required' => 'O estado é obrigatório.',
+            'cep.required' => 'O CEP é obrigatório.',
+            'shipping_option.required' => 'Selecione uma opção de envio.',
             'payment_gateway.required' => 'Selecione um gateway de pagamento.',
             'payment_gateway.in' => 'O gateway de pagamento selecionado não é válido.',
             'card_token.required_if' => 'O token do cartão é obrigatório para pagamento com cartão de crédito.',
@@ -174,6 +193,19 @@ class CheckoutController extends Controller
                 throw new \Exception("Valor total do pedido inválido.");
             }
 
+            // Criar endereço a partir do formulário
+            $address = Address::create([
+                'user_id' => $request->user()->id,
+                'street' => $request->endereco,
+                'number' => $request->numero,
+                'complement' => $request->complemento,
+                'neighborhood' => $request->bairro,
+                'city' => $request->cidade,
+                'state' => $request->estado,
+                'zip_code' => $request->cep,
+                'is_default' => false,
+            ]);
+
             // Criar pedido
             $order = Order::create([
                 'user_id' => $request->user()->id,
@@ -182,9 +214,11 @@ class CheckoutController extends Controller
                 'tax' => $tax,
                 'status' => 'pending',
                 'payment_status' => 'pending',
-                'shipping_address_id' => $request->shipping_address_id,
-                'billing_address_id' => $request->shipping_address_id, // Usando o mesmo endereço para faturamento
-                'notes' => strip_tags($request->notes) ?? null // Sanitizar entrada
+                'shipping_address_id' => $address->id,
+                'billing_address_id' => $address->id, // Usando o mesmo endereço para faturamento
+                'notes' => strip_tags($request->notes) ?? null, // Sanitizar entrada
+                'shipping_method' => $request->shipping_option,
+                'shipping_data' => json_encode(session('shipping_data')),
             ]);
 
             // Criar itens do pedido e atualizar estoque
@@ -211,11 +245,71 @@ class CheckoutController extends Controller
             $order->transaction_code = $paymentResult['transaction_code'] ?? null;
             $order->payment_method = $request->payment_method;
             $order->payment_gateway = $request->payment_gateway;
+            
+            // Gerar etiqueta de envio com o Melhor Envio se o pagamento for aprovado
+            // ou se a opção de envio vier do Melhor Envio
+            if (($paymentResult['status'] === 'approved' || $paymentResult['status'] === 'pending') && 
+                in_array($request->shipping_option, ['pac', 'sedex', 'mini', 'express']) && 
+                $this->melhorEnvioService->isEnabled()) {
+                
+                try {
+                    // Formatar dados para geração da etiqueta
+                    $items = $order->items->map(function ($item) {
+                        $product = $item->product;
+                        return [
+                            'id' => $product->id,
+                            'width' => $product->width ?? 11,
+                            'height' => $product->height ?? 4,
+                            'length' => $product->length ?? 16,
+                            'weight' => $product->weight ?? 0.3,
+                            'insurance_value' => $product->price,
+                            'quantity' => $item->quantity
+                        ];
+                    })->toArray();
+                    
+                    // Dados do destinatário
+                    $to = [
+                        'name' => $request->user()->name,
+                        'phone' => $request->user()->phone ?? '11999999999',
+                        'email' => $request->user()->email,
+                        'address' => $request->endereco,
+                        'number' => $request->numero,
+                        'complement' => $request->complemento,
+                        'district' => $request->bairro,
+                        'city' => $request->cidade,
+                        'state' => $request->estado,
+                        'postal_code' => preg_replace('/[^0-9]/', '', $request->cep)
+                    ];
+                    
+                    // Gerar etiqueta
+                    $shippingLabel = $this->melhorEnvioService->generateShippingLabel(
+                        $items, 
+                        $to, 
+                        $request->shipping_option,
+                        $order->id
+                    );
+                    
+                    if ($shippingLabel['success']) {
+                        $order->shipping_label_code = $shippingLabel['tracking_code'] ?? null;
+                        $order->shipping_label_url = $shippingLabel['label_url'] ?? null;
+                        $order->shipping_tracking_url = $shippingLabel['tracking_url'] ?? null;
+                    } else {
+                        Log::warning('Falha ao gerar etiqueta de envio: ' . ($shippingLabel['message'] ?? 'Erro desconhecido'));
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Erro ao gerar etiqueta de envio: ' . $e->getMessage());
+                    // Não impedir a finalização do pedido se a etiqueta falhar
+                }
+            }
+            
             $order->save();
 
             // Limpar o carrinho
             $cart->items()->delete();
             $cart->delete();
+            
+            // Limpar dados de frete da sessão
+            session()->forget(['shipping_cost', 'shipping_method', 'shipping_data']);
 
             DB::commit();
 
@@ -393,5 +487,147 @@ class CheckoutController extends Controller
         }
 
         return view('site.checkout.failure', compact('order'));
+    }
+
+    /**
+     * Calcula as opções de frete disponíveis com base no CEP e nos itens do carrinho
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function calcularFrete(Request $request)
+    {
+        // Validar os dados recebidos
+        $validator = Validator::make($request->all(), [
+            'cep' => 'required|string|size:8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
+        }
+        
+        try {
+            // Obter o carrinho do usuário ou da sessão
+            $cart = $request->user() ? $request->user()->cart : Cart::where('session_id', session()->getId())->first();
+            
+            if (!$cart || $cart->items->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Carrinho vazio',
+                ], 400);
+            }
+            
+            // Formatar os itens do carrinho para o cálculo
+            $items = $cart->items->map(function ($item) {
+                $product = $item->product;
+                return [
+                    'id' => $product->id,
+                    'width' => $product->width ?? 11,
+                    'height' => $product->height ?? 4,
+                    'length' => $product->length ?? 16,
+                    'weight' => $product->weight ?? 0.3,
+                    'insurance_value' => $product->price,
+                    'quantity' => $item->quantity
+                ];
+            })->toArray();
+            
+            // Calcular frete com o Melhor Envio
+            $shippingOptions = $this->melhorEnvioService->calculateShipping($items, $request->cep);
+            
+            // Se não houver opções de frete do Melhor Envio, verificar outras opções
+            if (empty($shippingOptions)) {
+                // Tentar serviço dos Correios diretamente se estiver disponível
+                $correiosEnabled = $this->systemSettings->get('shipping', 'correios_enabled', 'false') === 'true';
+                
+                if ($correiosEnabled) {
+                    // Chamar serviço dos Correios diretamente (implementação simplificada)
+                    // Na implementação real, você usaria um CorreiosService similar ao MelhorEnvioService
+                    $shippingOptions = $this->getDefaultCorreiosShippingOptions();
+                } else {
+                    // Retornar opções de frete padrão caso nenhum serviço esteja disponível
+                    $shippingOptions = $this->getDefaultShippingOptions();
+                }
+            }
+            
+            // Caso estejamos no carrinho, salvar a opção selecionada na sessão
+            if ($request->has('selected_method') && isset($shippingOptions[$request->selected_method])) {
+                session(['shipping_cost' => $shippingOptions[$request->selected_method]['price']]);
+                session(['shipping_method' => $request->selected_method]);
+                session(['shipping_data' => [
+                    'method' => $request->selected_method,
+                    'name' => $shippingOptions[$request->selected_method]['name'],
+                    'price' => $shippingOptions[$request->selected_method]['price'],
+                    'delivery_time' => $shippingOptions[$request->selected_method]['delivery_time'],
+                ]]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'options' => $shippingOptions
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Erro ao calcular frete: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Erro ao calcular o frete. Tente novamente mais tarde.',
+                'debug' => config('app.debug') ? $e->getMessage() : null
+            ], 500);
+        }
+    }
+    
+    /**
+     * Retorna opções padrão de frete dos Correios quando o cálculo online falha
+     * 
+     * @return array
+     */
+    private function getDefaultCorreiosShippingOptions()
+    {
+        return [
+            'pac' => [
+                'name' => 'PAC',
+                'price' => 25.90,
+                'delivery_time' => 10,
+                'company' => 'Correios',
+                'id' => 'pac'
+            ],
+            'sedex' => [
+                'name' => 'SEDEX',
+                'price' => 45.90,
+                'delivery_time' => 3,
+                'company' => 'Correios',
+                'id' => 'sedex'
+            ]
+        ];
+    }
+    
+    /**
+     * Retorna opções padrão de frete quando nenhum serviço está disponível
+     * 
+     * @return array
+     */
+    private function getDefaultShippingOptions()
+    {
+        return [
+            'standard' => [
+                'name' => 'Entrega Padrão',
+                'price' => 19.90,
+                'delivery_time' => 7,
+                'company' => 'Loja',
+                'id' => 'standard'
+            ],
+            'express' => [
+                'name' => 'Entrega Expressa',
+                'price' => 34.90,
+                'delivery_time' => 2,
+                'company' => 'Loja',
+                'id' => 'express'
+            ]
+        ];
     }
 }

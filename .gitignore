@@ -9,6 +9,7 @@
 .env
 .env.backup
 .env.production
+.env.testing
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
@@ -21,3 +22,37 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Local development specific
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+.php_cs.cache
+.php-cs-fixer.cache
+auth.json
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+
+# VPS deployment specific
+deploy.php
+deployment-config.json
+.deployment
+
+# Backups
+*.bak
+*.backup
+*.old

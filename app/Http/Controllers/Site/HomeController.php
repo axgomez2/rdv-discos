@@ -32,6 +32,16 @@ class HomeController extends Controller
         ->take(value: 10)
         ->get();
 
+        // Obter vinis promocionais
+        $promotionalVinyls = VinylMaster::with(['artists', 'vinylSec', 'catStyleShops'])
+        ->whereHas('vinylSec', function ($query) {
+            $query->where('in_stock', true)
+                  ->where('is_promotional', true);
+        })
+        ->latest()
+        ->take(value: 20)
+        ->get();
+
         // Obter as 3 playlists mais recentes que estão ativas
         $featuredPlaylists = Playlist::with(['tracks.vinylMaster', 'tracks.trackable'])
             ->where('is_active', true)
@@ -39,7 +49,7 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
-        return view('site.index', compact('latestVinyls', 'slideVinyls', 'featuredPlaylists'));
+        return view('site.index', compact('latestVinyls', 'slideVinyls', 'featuredPlaylists', 'promotionalVinyls'));
     }
 
     public function about()

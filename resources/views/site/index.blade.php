@@ -18,15 +18,15 @@
 
 
     <!-- Events & Featured Section -->
-    <div class="bg-gray-200 ">
+    <div class="bg-slate-200 ">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="mb-8">
                 <div class="flex items-center justify-between mb-8">
                     <div>
-                        <h2 class="text-3xl font-bold text-white mb-2">Últimos Discos Adicionados:</h2>
-                        <p class="text-gray-100">clique no botão do card para ouvir os discos:</p>
+                        <h2 class="text-3xl font-bold text-slate-800 mb-2">Últimos Discos Adicionados:</h2>
+                        <p class="text-slate-700">clique no botão do card para ouvir os discos:</p>
                     </div>
-                    <a href="{{ route('site.vinyls.index') }}" class="group inline-flex items-center text-white hover:text-yellow-700 font-medium">
+                    <a href="{{ route('site.vinyls.index') }}" class="group inline-flex items-center text-slate-700 hover:text-slate-900 font-medium">
                         Ver todos os discos
                         <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
                     </a>
@@ -44,16 +44,16 @@
 
 
             <!-- Featured Playlists -->
-            <div class="bg-yellow-400">
+            <div class="bg-slate-900">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div id="playlists">
                         <div class="flex items-center justify-between mb-8">
                             <div>
-                                <h2 class="text-3xl font-bold text-gray-900 mb-2">Playlists <b class="">RDV</b></h2>
-                                <p class="text-gray-900">Recomendações da loja:</p>
+                                <h2 class="text-3xl font-bold text-slate-100 mb-2">Playlists <b class="">RDV</b></h2>
+                                <p class="text-slate-200">Recomendações da loja:</p>
                             </div>
                             <a href="{{ route('site.playlists.index') }}"
-                            class="group inline-flex items-center text-gray-800 hover:text-black font-medium">
+                            class="group inline-flex items-center text-slate-300 hover:text-slate-100 font-medium">
                                 Ver todas
                                 <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
                             </a>
@@ -109,21 +109,21 @@
 
 
         <!-- Events & Featured Section -->
-        <div class="bg-black ">
+        <div class="bg-slate-200 ">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div class="mb-8">
                     <div class="flex items-center justify-between mb-8">
                         <div>
-                            <h2 class="text-3xl font-bold text-white mb-2">Ofertas:</h2>
-                            <p class="text-gray-100">clique no botão do card para ouvir os discos:</p>
+                            <h2 class="text-3xl font-bold text-slate-800 mb-2">Ofertas:</h2>
+                            <p class="text-slate-700">clique no botão do card para ouvir os discos:</p>
                         </div>
-                        <a href="{{ route('site.vinyls.index') }}" class="group inline-flex items-center text-white hover:text-yellow-700 font-medium">
+                        <a href="{{ route('site.vinyls.index') }}" class="group inline-flex items-center text-slate-700 hover:text-slate-900 font-medium">
                             Ver todas as promoções:
                             <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
                         </a>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
-                        @foreach($latestVinyls as $vinyl)
+                        @foreach($promotionalVinyls as $vinyl)
                             @include('components.site.vinyl-card', ['vinyl' => $vinyl])
                         @endforeach
                     </div>

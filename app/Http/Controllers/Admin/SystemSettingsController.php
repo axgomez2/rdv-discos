@@ -169,25 +169,157 @@ class SystemSettingsController extends Controller
      */
     public function updateMelhorEnvio(Request $request)
     {
+        try {
+            $validated = $request->validate([
+                'client_id' => 'required|string',
+                'client_secret' => 'required|string',
+                'sandbox' => 'nullable',
+                'enabled' => 'nullable',
+                'auto_approve' => 'nullable',
+                'service_pac' => 'nullable',
+                'service_sedex' => 'nullable',
+                'service_mini' => 'nullable',
+                'service_jadlog' => 'nullable',
+                'service_azul' => 'nullable',
+                'service_latam' => 'nullable',
+            ]);
+
+            $data = [
+                'client_id' => $validated['client_id'],
+                'client_secret' => $validated['client_secret'],
+                'sandbox' => isset($validated['sandbox']) ? 'true' : 'false',
+                'enabled' => isset($validated['enabled']) ? 'true' : 'false',
+                'auto_approve' => isset($validated['auto_approve']) ? 'true' : 'false',
+                'service_pac' => isset($validated['service_pac']) ? 'true' : 'false',
+                'service_sedex' => isset($validated['service_sedex']) ? 'true' : 'false',
+                'service_mini' => isset($validated['service_mini']) ? 'true' : 'false',
+                'service_jadlog' => isset($validated['service_jadlog']) ? 'true' : 'false',
+                'service_azul' => isset($validated['service_azul']) ? 'true' : 'false',
+                'service_latam' => isset($validated['service_latam']) ? 'true' : 'false',
+            ];
+
+            $this->settingsService->saveMelhorEnvio($data);
+
+            return redirect()->route('admin.settings.melhorenvio')->with('success', 'Configurações do Melhor Envio atualizadas com sucesso!');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.settings.melhorenvio')->with('error', 'Erro ao atualizar configurações: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Processa o callback de autenticação do Melhor Envio
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function melhorEnvioCallback(Request $request)
+    {
+        try {
+            // Verificar se o código de autorização foi recebido
+            if (!$request->has('code')) {
+                return redirect()->route('admin.settings.melhorenvio')
+                    ->with('error', 'Autorização falhou. Código de autorização não recebido.');
+            }
+
+            $code = $request->code;
+            
+            // Recuperar as configurações salvas
+            $settings = array_filter($this->settingsService->getGroup('shipping'), function($key) {
+                return strpos($key, 'melhorenvio_') === 0;
+            }, ARRAY_FILTER_USE_KEY);
+            
+            // Verificar se as credenciais existem
+            if (empty($settings['melhorenvio_client_id']) || empty($settings['melhorenvio_client_secret'])) {
+                return redirect()->route('admin.settings.melhorenvio')
+                    ->with('error', 'Client ID e Client Secret devem ser configurados antes da autenticação.');
+            }
+            
+            $clientId = $settings['melhorenvio_client_id'];
+            $clientSecret = $settings['melhorenvio_client_secret'];
+            $redirectUri = url('/admin/settings/melhorenvio/callback');
+            
+            // Determinar a URL da API com base no modo sandbox
+            $apiUrl = isset($settings['melhorenvio_sandbox']) && $settings['melhorenvio_sandbox'] == 'true'
+                ? 'https://sandbox.melhorenvio.com.br'
+                : 'https://melhorenvio.com.br';
+            
+            // Realizar a requisição para obter o token
+            $client = new \GuzzleHttp\Client();
+            $response = $client->post($apiUrl . '/oauth/token', [
+                'form_params' => [
+                    'grant_type' => 'authorization_code',
+                    'client_id' => $clientId,
+                    'client_secret' => $clientSecret,
+                    'redirect_uri' => $redirectUri,
+                    'code' => $code,
+                ],
+                'http_errors' => false,
+            ]);
+            
+            $result = json_decode($response->getBody()->getContents(), true);
+            
+            // Verificar se o token foi obtido com sucesso
+            if (isset($result['access_token'])) {
+                // Salvar o token nas configurações
+                $data = $settings;
+                $data['token'] = $result['access_token'];
+                $data['refresh_token'] = $result['refresh_token'] ?? null;
+                $data['token_expires_at'] = now()->addSeconds($result['expires_in'] ?? 3600)->format('Y-m-d H:i:s');
+                
+                $this->settingsService->saveMelhorEnvio($data);
+                
+                return redirect()->route('admin.settings.melhorenvio')
+                    ->with('success', 'Autenticação realizada com sucesso! Token gerado e salvo.');
+            } else {
+                // Erro na obtenção do token
+                $errorMessage = $result['error_description'] ?? 'Erro desconhecido ao obter o token de acesso.';
+                return redirect()->route('admin.settings.melhorenvio')
+                    ->with('error', 'Falha na autenticação: ' . $errorMessage);
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('admin.settings.melhorenvio')
+                ->with('error', 'Erro durante o processo de autenticação: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Show form for mercado envio settings
+     */
+    public function editMercadoEnvio()
+    {
+        $settings = array_filter($this->settingsService->getGroup('shipping'), function($key) {
+            return strpos($key, 'mercadoenvio_') === 0;
+        }, ARRAY_FILTER_USE_KEY);
+        
+        return view('admin.settings.mercadoenvio', compact('settings'));
+    }
+    
+    /**
+     * Atualizar configurações do Mercado Envio
+     */
+    public function updateMercadoEnvio(Request $request)
+    {
         $request->validate([
-            'client_id' => 'required|string',
-            'client_secret' => 'required|string',
+            'api_key' => 'required|string',
+            'secret_key' => 'required|string',
+            'seller_id' => 'required|string',
             'sandbox' => 'boolean',
             'enabled' => 'boolean'
         ]);
         
         try {
-            $this->settingsService->saveMelhorEnvio([
-                'client_id' => $request->client_id,
-                'client_secret' => $request->client_secret,
+            $this->settingsService->saveMercadoEnvio([
+                'api_key' => $request->api_key,
+                'secret_key' => $request->secret_key,
+                'seller_id' => $request->seller_id,
                 'sandbox' => $request->sandbox ?? false,
                 'enabled' => $request->enabled ?? false
             ]);
             
             return redirect()->route('admin.store-settings.index')
-                ->with('success', 'Configurações do Melhor Envio atualizadas com sucesso.');
+                ->with('success', 'Configurações do Mercado Envio atualizadas com sucesso.');
         } catch (\Exception $e) {
-            Log::error('Erro ao salvar configurações do Melhor Envio: ' . $e->getMessage());
+            Log::error('Erro ao salvar configurações do Mercado Envio: ' . $e->getMessage());
             
             return redirect()->back()
                 ->with('error', 'Erro ao salvar configurações: ' . $e->getMessage())
@@ -206,7 +338,7 @@ class SystemSettingsController extends Controller
         
         return view('admin.settings.correios', compact('settings'));
     }
-    
+
     /**
      * Atualizar configurações dos Correios
      */

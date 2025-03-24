@@ -126,6 +126,14 @@ Route::middleware(['auth', 'rolemanager:admin'])->group(function () {
                 ->name('admin.settings.melhorenvio');
             Route::post('/melhor-envio', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updateMelhorEnvio'])
                 ->name('admin.settings.melhorenvio.update');
+            Route::get('/melhor-envio/callback', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'melhorEnvioCallback'])
+                ->name('admin.settings.melhorenvio.callback');
+                
+            // Mercado Envio
+            Route::get('/mercado-envio', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'editMercadoEnvio'])
+                ->name('admin.settings.mercadoenvio');
+            Route::post('/mercado-envio', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'updateMercadoEnvio'])
+                ->name('admin.settings.mercadoenvio.update');
                 
             // Correios
             Route::get('/correios', [\App\Http\Controllers\Admin\SystemSettingsController::class, 'editCorreios'])

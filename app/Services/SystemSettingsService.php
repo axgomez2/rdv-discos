@@ -149,8 +149,10 @@ class SystemSettingsService
      */
     public function saveMercadoEnvio(array $data)
     {
-        $this->set('shipping', 'mercadoenvio_token', $data['token'], 'MercadoEnvio API Token', true);
-        $this->set('shipping', 'mercadoenvio_user_id', $data['user_id'], 'MercadoEnvio User ID', false);
+        $this->set('shipping', 'mercadoenvio_api_key', $data['api_key'], 'MercadoEnvio API Key', false);
+        $this->set('shipping', 'mercadoenvio_secret_key', $data['secret_key'], 'MercadoEnvio Secret Key', true);
+        $this->set('shipping', 'mercadoenvio_seller_id', $data['seller_id'], 'MercadoEnvio Seller ID', false);
+        $this->set('shipping', 'mercadoenvio_sandbox', $data['sandbox'] ?? false, 'MercadoEnvio Sandbox Mode', false);
         $this->set('shipping', 'mercadoenvio_enabled', $data['enabled'] ?? false, 'MercadoEnvio Enabled', false);
     }
     
@@ -161,8 +163,36 @@ class SystemSettingsService
     {
         $this->set('shipping', 'melhorenvio_client_id', $data['client_id'], 'Melhor Envio Client ID', false);
         $this->set('shipping', 'melhorenvio_client_secret', $data['client_secret'], 'Melhor Envio Client Secret', true);
-        $this->set('shipping', 'melhorenvio_sandbox', $data['sandbox'] ?? false, 'Melhor Envio Sandbox Mode', false);
-        $this->set('shipping', 'melhorenvio_enabled', $data['enabled'] ?? false, 'Melhor Envio Enabled', false);
+        $this->set('shipping', 'melhorenvio_sandbox', $data['sandbox'] ?? 'false', 'Melhor Envio Sandbox Mode', false);
+        $this->set('shipping', 'melhorenvio_enabled', $data['enabled'] ?? 'false', 'Melhor Envio Enabled', false);
+        
+        // Salvar token e informações de autenticação, se fornecidas
+        if (isset($data['token'])) {
+            $this->set('shipping', 'melhorenvio_token', $data['token'], 'Melhor Envio Access Token', true);
+        }
+        
+        if (isset($data['refresh_token'])) {
+            $this->set('shipping', 'melhorenvio_refresh_token', $data['refresh_token'], 'Melhor Envio Refresh Token', true);
+        }
+        
+        if (isset($data['token_expires_at'])) {
+            $this->set('shipping', 'melhorenvio_token_expires_at', $data['token_expires_at'], 'Melhor Envio Token Expiration', false);
+        }
+        
+        // Opções adicionais
+        $this->set('shipping', 'melhorenvio_auto_approve', $data['auto_approve'] ?? 'false', 'Melhor Envio Auto Approve Orders', false);
+        
+        // Serviços disponíveis - Correios
+        $this->set('shipping', 'melhorenvio_service_pac', $data['service_pac'] ?? 'false', 'Melhor Envio Service PAC', false);
+        $this->set('shipping', 'melhorenvio_service_sedex', $data['service_sedex'] ?? 'false', 'Melhor Envio Service SEDEX', false);
+        $this->set('shipping', 'melhorenvio_service_mini', $data['service_mini'] ?? 'false', 'Melhor Envio Service Mini', false);
+        
+        // Serviços disponíveis - Transportadoras
+        $this->set('shipping', 'melhorenvio_service_jadlog', $data['service_jadlog'] ?? 'false', 'Melhor Envio Service Jadlog', false);
+        $this->set('shipping', 'melhorenvio_service_azul', $data['service_azul'] ?? 'false', 'Melhor Envio Service Azul', false);
+        $this->set('shipping', 'melhorenvio_service_latam', $data['service_latam'] ?? 'false', 'Melhor Envio Service LATAM', false);
+        
+        return true;
     }
     
     /**
