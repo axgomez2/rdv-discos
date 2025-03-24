@@ -48,12 +48,15 @@ class SocialiteController extends Controller
                 // Obter as credenciais do banco de dados
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
-                $redirectUrl = $this->systemSettings->get('oauth', 'google_redirect', route('auth.google.callback'));
+                $redirectUrl = $this->systemSettings->get('oauth', 'google_redirect', 'https://rdvdiscos.com.br/auth/google/callback');
 
                 if (empty($clientId) || empty($clientSecret)) {
                     Log::error('Google OAuth credentials are not configured in database');
                     return redirect('/login')->with('error', 'Configuração do Google OAuth incompleta. Entre em contato com o administrador.');
                 }
+
+                // Limpar o cache do Socialite
+                Socialite::forgetDrivers();
 
                 // Configurar o Socialite com as credenciais do banco
                 config([
@@ -69,6 +72,7 @@ class SocialiteController extends Controller
             return Socialite::driver($provider)->redirect();
         } catch (Exception $e) {
             Log::error("Erro ao redirecionar para o provedor $provider: " . $e->getMessage());
+            Log::error($e->getTraceAsString());
             return redirect('/login')->with('error', "Não foi possível conectar ao provedor $provider: " . $e->getMessage());
         }
     }
@@ -89,13 +93,18 @@ class SocialiteController extends Controller
             if ($provider === 'google') {
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
-                $redirectUrl = $this->systemSettings->get('oauth', 'google_redirect', route('auth.google.callback'));
+                $redirectUrl = $this->systemSettings->get('oauth', 'google_redirect', 'https://rdvdiscos.com.br/auth/google/callback');
+
+                // Limpar o cache do Socialite
+                Socialite::forgetDrivers();
 
                 config([
                     'services.google.client_id' => $clientId,
                     'services.google.client_secret' => $clientSecret,
                     'services.google.redirect' => $redirectUrl
                 ]);
+
+                Log::info("Google OAuth credenciais carregadas para o callback");
             }
             
             $socialUser = Socialite::driver($provider)->user();

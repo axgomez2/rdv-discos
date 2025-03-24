@@ -163,7 +163,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\OAuthServiceProvider::class, // Reativado após correções
+        // OAuthServiceProvider removido devido a problemas de inicialização
     ],
 
     'aliases' => [

@@ -44,27 +44,21 @@ class OAuthSettingsController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()
-                ->back()
-                ->withErrors($validator)
-                ->withInput();
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $data = [
-            'client_id' => $request->input('client_id'),
-            'client_secret' => $request->input('client_secret'),
-            'redirect' => $request->input('redirect'),
-            'enabled' => $request->has('enabled'),
-        ];
+        // Salvar as configurações
+        $this->systemSettings->set('oauth', 'google_client_id', $request->input('client_id'));
+        $this->systemSettings->set('oauth', 'google_client_secret', $request->input('client_secret'));
+        $this->systemSettings->set('oauth', 'google_redirect', $request->input('redirect')); // Salvar URL diretamente
+        $this->systemSettings->set('oauth', 'google_enabled', $request->has('enabled'));
 
-        $this->systemSettings->saveGoogleOauth($data);
+        // Limpar o cache do Socialite se estiver sendo usado
+        if (class_exists('Laravel\Socialite\Facades\Socialite')) {
+            \Laravel\Socialite\Facades\Socialite::forgetDrivers();
+        }
 
-        // Limpar o cache do Socialite para usar as novas configurações
-        \Laravel\Socialite\Facades\Socialite::forgetDrivers();
-
-        return redirect()
-            ->back()
-            ->with('success', 'Configurações do Google OAuth atualizadas com sucesso!');
+        return redirect()->back()->with('success', 'Configurações do Google atualizadas com sucesso.');
     }
 
     /**
