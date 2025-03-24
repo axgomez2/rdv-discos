@@ -152,8 +152,17 @@ Route::get('/terms-of-service', function () {
     return view('site.terms-of-service');
 })->name('terms.service');
 
+// Rota alternativa para Google Auth para contornar problemas de 404
+Route::get('/login-with-google', function() {
+    return app(\App\Http\Controllers\Auth\SocialiteController::class)->redirectToProvider('google');
+})->name('login.with.google');
+
+// Rota alternativa para callback do Google
+Route::get('/google-callback', function() {
+    return app(\App\Http\Controllers\Auth\SocialiteController::class)->handleProviderCallback('google');
+})->name('google.callback');
+
 // Adicionar rotas explícitas para Google Auth na web.php para garantir disponibilidade
-// Estas rotas são complementares às definidas em auth.php para garantir que estejam disponíveis
 Route::get('/auth/google', [App\Http\Controllers\Auth\SocialiteController::class, 'redirectToProvider'])
     ->name('web.auth.google')
     ->defaults('provider', 'google');

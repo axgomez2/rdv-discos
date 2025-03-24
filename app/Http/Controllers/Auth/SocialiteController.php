@@ -33,6 +33,7 @@ class SocialiteController extends Controller
         try {
             // Log para depuração
             Log::info("Iniciando autenticação com provedor: $provider");
+            Log::info("Rota usada: " . request()->route()->getName());
             
             // Verificar se o provedor é suportado
             if (!in_array($provider, ['google', 'facebook'])) {
@@ -53,8 +54,17 @@ class SocialiteController extends Controller
                 $clientId = $this->systemSettings->get('oauth', 'google_client_id', '');
                 $clientSecret = $this->systemSettings->get('oauth', 'google_client_secret', '');
                 
-                // Usa a URL de callback consistente com as rotas definidas
-                $redirectUrl = url('/auth/google/callback');
+                // Determina URL de callback baseado na rota que foi usada
+                $routeName = request()->route()->getName() ?? '';
+                if ($routeName === 'login.with.google') {
+                    // Usar a URL de callback alternativa
+                    $redirectUrl = url('/google-callback');
+                    Log::info("Usando URL de callback alternativa: $redirectUrl");
+                } else {
+                    // Usa a URL de callback padrão
+                    $redirectUrl = url('/auth/google/callback');
+                    Log::info("Usando URL de callback padrão: $redirectUrl");
+                }
                 
                 if (empty($clientId) || empty($clientSecret)) {
                     Log::error('Google OAuth credentials are not configured in database');

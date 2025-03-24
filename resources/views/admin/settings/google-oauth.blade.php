@@ -34,7 +34,7 @@
                     <li>Clique em "Criar Credenciais" e selecione "ID do Cliente OAuth"</li>
                     <li>Selecione "Aplicativo da Web" como tipo de aplicativo</li>
                     <li>Adicione o domínio do seu site em "Origens JavaScript autorizadas"</li>
-                    <li>Adicione a URL de redirecionamento em "URIs de redirecionamento autorizados" (exemplo: https://seu-site.com.br/auth/google/callback)</li>
+                    <li>Adicione a URL de redirecionamento em "URIs de redirecionamento autorizados" (exemplo: https://seu-site.com.br/google-callback)</li>
                     <li>Clique em "Criar" e copie o "ID do cliente" e "Chave secreta"</li>
                 </ol>
             </div>
@@ -82,7 +82,7 @@
                         type="url"
                         name="redirect"
                         id="redirect"
-                        value="{{ $settings['google_redirect'] ?? old('redirect', url('/auth/google/callback')) }}"
+                        value="{{ $settings['google_redirect'] ?? old('redirect', url('/google-callback')) }}"
                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         required
                     >
