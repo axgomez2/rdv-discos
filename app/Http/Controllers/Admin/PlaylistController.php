@@ -13,7 +13,7 @@ class PlaylistController extends Controller
 {
     public function index()
     {
-        $playlists = Playlist::with('faixas.vinylMaster')
+        $playlists = Playlist::with('tracks.vinylMaster')
             ->latest()
             ->paginate(12);
         return view('admin.playlists.index', compact('playlists'));
@@ -61,7 +61,7 @@ class PlaylistController extends Controller
         if (!empty($validated['vinyls'])) {
             foreach ($validated['vinyls'] as $index => $vinylId) {
                 $vinyl = VinylMaster::find($vinylId);
-                $playlist->adicionarFaixa($vinyl, $vinyl);
+                $playlist->addTrack($vinyl, $vinyl);
             }
         }
 
@@ -72,7 +72,7 @@ class PlaylistController extends Controller
 
     public function edit(Playlist $playlist)
     {
-        $playlist->load('faixas.vinylMaster');
+        $playlist->load('tracks.vinylMaster');
         return view('admin.playlists.edit', compact('playlist'));
     }
 
@@ -115,12 +115,12 @@ class PlaylistController extends Controller
 
         if (isset($validated['vinyls'])) {
             // Remove todas as faixas atuais
-            $playlist->faixas()->delete();
+            $playlist->tracks()->delete();
             
             // Adiciona as novas faixas
             foreach ($validated['vinyls'] as $index => $vinylId) {
                 $vinyl = VinylMaster::find($vinylId);
-                $playlist->adicionarFaixa($vinyl, $vinyl);
+                $playlist->addTrack($vinyl, $vinyl);
             }
         }
 

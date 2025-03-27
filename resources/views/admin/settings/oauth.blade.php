@@ -30,7 +30,7 @@
                     </div>
                     @endif
 
-                    <form action="{{ route('admin.settings.oauth.google.save') }}" method="POST">
+                    <form action="{{ route('admin.store-settings.oauth.google.save') }}" method="POST">
                         @csrf
                         
                         <div class="form-group row mb-4">
@@ -119,7 +119,7 @@
             button.disabled = true;
             button.innerHTML = 'Testando...';
             
-            fetch('{{ route("admin.settings.oauth.google.test") }}')
+            fetch('{{ route("admin.store-settings.oauth.google.test") }}')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {

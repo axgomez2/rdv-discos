@@ -22,7 +22,7 @@
     @endif
 
     <div class="bg-white shadow-md rounded-lg p-6">
-        <form action="{{ route('admin.settings.pagseguro.update') }}" method="POST">
+        <form action="{{ route('admin.store-settings.pagseguro.update') }}" method="POST">
             @csrf
             
             <div class="mb-8">
@@ -136,7 +136,7 @@
             }
         });
         
-        axios.post('{{ route("admin.settings.test-connection") }}', {
+        axios.post('{{ route("admin.store-settings.test-connection") }}', {
                 service: service,
                 email: formData.get('email'),
                 token: formData.get('token'),

@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'cpf',
         'role',
         'google_id',
+        'uuid',
     ];
 
     /**
@@ -49,6 +50,31 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'role' => 'integer',
         ];
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
+
+    /**
+     * Especifica qual coluna usar para rotas de modelo.
+     * Isso garante que UUIDs sejam usados em URLs em vez de IDs.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
     }
 
     public function addresses()

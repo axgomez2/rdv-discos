@@ -22,7 +22,7 @@
     @endif
 
     <div class="bg-white shadow-md rounded-lg p-6">
-        <form action="{{ route('admin.settings.correios.update') }}" method="POST">
+        <form action="{{ route('admin.store-settings.correios.update') }}" method="POST">
             @csrf
             
             <div class="mb-8">
@@ -107,7 +107,7 @@
             <div class="mt-8 border-t pt-4 flex justify-end space-x-3">
                 <button
                     type="button"
-                    onclick="testConnection('correios')"
+                    onclick="testConnection()"
                     class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
                 >
                     Testar Conexão
@@ -125,49 +125,41 @@
 
 @push('scripts')
 <script>
-    function testConnection(service) {
-        const form = document.querySelector('form');
-        const formData = new FormData(form);
+    function testConnection() {
+        this.testing = true;
+        this.testResult = null;
         
-        // Mostrar loading
-        Swal.fire({
-            title: 'Testando conexão...',
-            text: 'Por favor, aguarde enquanto testamos a conexão com o serviço.',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
+        axios.post('{{ route("admin.store-settings.test-connection") }}', {
+            service: 'correios',
+            credentials: {
+                usuario: document.getElementById('usuario').value,
+                senha: document.getElementById('senha').value,
+                empresa_codigo: document.getElementById('empresa_codigo').value
             }
-        });
-        
-        axios.post('{{ route("admin.settings.test-connection") }}', {
-                service: service,
-                usuario: formData.get('usuario'),
-                senha: formData.get('senha'),
-                empresa_codigo: formData.get('empresa_codigo')
-            })
-            .then(response => {
-                if (response.data.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Conexão bem-sucedida!',
-                        text: response.data.message
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Falha na conexão',
-                        text: response.data.message
-                    });
-                }
-            })
-            .catch(error => {
+        })
+        .then(response => {
+            if (response.data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Conexão bem-sucedida!',
+                    text: response.data.message
+                });
+            } else {
                 Swal.fire({
                     icon: 'error',
-                    title: 'Erro ao testar conexão',
-                    text: 'Ocorreu um erro ao testar a conexão. Verifique as credenciais e tente novamente.'
+                    title: 'Falha na conexão',
+                    text: response.data.message
                 });
-                console.error(error);
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro ao testar conexão',
+                text: 'Ocorreu um erro ao testar a conexão. Verifique as credenciais e tente novamente.'
             });
+            console.error(error);
+        });
     }
 </script>
 @endpush

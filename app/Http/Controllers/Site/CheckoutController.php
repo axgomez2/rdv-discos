@@ -46,8 +46,7 @@ class CheckoutController extends Controller
         // Calcular valores com validação adicional
         $subtotal = $this->calculateSubtotal($cart);
         $shippingCost = (float)session('shipping_cost', 0);
-        $tax = round($subtotal * 0.1, 2); // 10% de imposto, arredondado para 2 casas decimais
-        $total = $subtotal + $shippingCost + $tax;
+        $total = $subtotal + $shippingCost;
 
         // Configurações de pagamento disponíveis
         $paymentGateways = $this->getAvailablePaymentGateways();
@@ -64,7 +63,6 @@ class CheckoutController extends Controller
             'cart', 
             'subtotal', 
             'shippingCost', 
-            'tax', 
             'total', 
             'paymentGateways',
             'mercadoPagoEnabled',
@@ -123,14 +121,17 @@ class CheckoutController extends Controller
             'cep' => 'required|string|size:9',
             'shipping_option' => 'required|string',
             'payment_gateway' => ['required', 'string', Rule::in(['mercadopago', 'pagseguro'])],
-            'payment_method' => ['required', 'string', Rule::in(['credit_card', 'boleto', 'pix'])],
+            'payment_method' => ['required', 'string', Rule::in([
+                'pagseguro_credit_card', 'pagseguro_boleto', 'pagseguro_pix',
+                'mercadopago_credit_card', 'mercadopago_boleto', 'mercadopago_pix'
+            ])],
             'notes' => 'nullable|string|max:500',
             // Validações específicas para cartão de crédito
-            'card_token' => 'required_if:payment_method,credit_card|string',
-            'installments' => 'required_if:payment_method,credit_card|integer|min:1|max:12',
-            'card_holder_name' => 'required_if:payment_method,credit_card|string|max:255',
+            'card_token' => 'required_if:payment_method,pagseguro_credit_card,mercadopago_credit_card|string',
+            'installments' => 'required_if:payment_method,pagseguro_credit_card,mercadopago_credit_card|integer|min:1|max:12',
+            'card_holder_name' => 'required_if:payment_method,pagseguro_credit_card,mercadopago_credit_card|string|max:255',
             'card_holder_cpf' => [
-                'required_if:payment_method,credit_card',
+                'required_if:payment_method,pagseguro_credit_card,mercadopago_credit_card',
                 'string',
                 'regex:/^\d{3}\.\d{3}\.\d{3}-\d{2}$|^\d{11}$/',
             ],
@@ -185,8 +186,7 @@ class CheckoutController extends Controller
             // Calcular valores com validação
             $subtotal = $this->calculateSubtotal($cart);
             $shippingCost = (float)session('shipping_cost', 0);
-            $tax = round($subtotal * 0.1, 2); // 10% de imposto
-            $total = $subtotal + $shippingCost + $tax;
+            $total = $subtotal + $shippingCost;
 
             // Validar valor total
             if ($total <= 0) {
@@ -211,7 +211,6 @@ class CheckoutController extends Controller
                 'user_id' => $request->user()->id,
                 'total' => $total,
                 'shipping_cost' => $shippingCost,
-                'tax' => $tax,
                 'status' => 'pending',
                 'payment_status' => 'pending',
                 'shipping_address_id' => $address->id,
@@ -314,11 +313,19 @@ class CheckoutController extends Controller
             DB::commit();
 
             // Redirecionar com base no método de pagamento
-            if ($request->payment_method === 'boleto' && isset($paymentResult['boleto_url'])) {
+            if ($request->payment_method === 'pagseguro_boleto' && isset($paymentResult['boleto_url'])) {
                 session()->flash('boleto_url', $paymentResult['boleto_url']);
                 return redirect()->route('site.payments.boleto', ['order' => $order->id])
                     ->with('success', 'Pedido realizado com sucesso! Efetue o pagamento do boleto para completar a compra.');
-            } else if ($request->payment_method === 'pix' && isset($paymentResult['qr_code_url'])) {
+            } else if ($request->payment_method === 'pagseguro_pix' && isset($paymentResult['qr_code_url'])) {
+                session()->flash('qr_code_url', $paymentResult['qr_code_url']);
+                return redirect()->route('site.payments.pix', ['order' => $order->id])
+                    ->with('success', 'Pedido realizado com sucesso! Escaneie o QR Code para completar a compra.');
+            } else if ($request->payment_method === 'mercadopago_boleto' && isset($paymentResult['boleto_url'])) {
+                session()->flash('boleto_url', $paymentResult['boleto_url']);
+                return redirect()->route('site.payments.boleto', ['order' => $order->id])
+                    ->with('success', 'Pedido realizado com sucesso! Efetue o pagamento do boleto para completar a compra.');
+            } else if ($request->payment_method === 'mercadopago_pix' && isset($paymentResult['qr_code_url'])) {
                 session()->flash('qr_code_url', $paymentResult['qr_code_url']);
                 return redirect()->route('site.payments.pix', ['order' => $order->id])
                     ->with('success', 'Pedido realizado com sucesso! Escaneie o QR Code para completar a compra.');
@@ -344,7 +351,7 @@ class CheckoutController extends Controller
     {
         // Sanitiza os dados do cartão se for pagamento por cartão de crédito
         $cardData = [];
-        if ($request->payment_method === 'credit_card') {
+        if ($request->payment_method === 'pagseguro_credit_card' || $request->payment_method === 'mercadopago_credit_card') {
             $cardData = [
                 'token' => $request->card_token,
                 'installments' => (int)$request->installments,
@@ -366,11 +373,11 @@ class CheckoutController extends Controller
                 
                 // Processa o pagamento de acordo com o método
                 switch ($request->payment_method) {
-                    case 'credit_card':
+                    case 'mercadopago_credit_card':
                         return $this->mercadoPagoService->processCreditCardPayment($order, $cardData);
-                    case 'boleto':
+                    case 'mercadopago_boleto':
                         return $this->mercadoPagoService->processBoletoPayment($order);
-                    case 'pix':
+                    case 'mercadopago_pix':
                         return $this->mercadoPagoService->processPixPayment($order);
                     default:
                         return [
@@ -390,11 +397,11 @@ class CheckoutController extends Controller
                 
                 // Processa o pagamento de acordo com o método
                 switch ($request->payment_method) {
-                    case 'credit_card':
+                    case 'pagseguro_credit_card':
                         return $this->pagSeguroService->processCreditCardPayment($order, $cardData);
-                    case 'boleto':
+                    case 'pagseguro_boleto':
                         return $this->pagSeguroService->processBoletoPayment($order);
-                    case 'pix':
+                    case 'pagseguro_pix':
                         return $this->pagSeguroService->processPixPayment($order);
                     default:
                         return [

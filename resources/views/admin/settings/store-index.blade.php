@@ -61,7 +61,7 @@
                     <p class="text-sm text-gray-600 mb-4">
                         Configure o gateway de pagamento PagSeguro para processar pagamentos online.
                     </p>
-                    <a href="{{ route('admin.settings.pagseguro') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <a href="{{ route('admin.store-settings.pagseguro') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         Configurar
                     </a>
                 </div>
@@ -79,7 +79,7 @@
                     <p class="text-sm text-gray-600 mb-4">
                         Configure o gateway de pagamento MercadoPago para processar pagamentos online.
                     </p>
-                    <a href="{{ route('admin.settings.mercadopago') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <a href="{{ route('admin.store-settings.mercadopago') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         Configurar
                     </a>
                 </div>
@@ -99,9 +99,9 @@
                         </span>
                     </div>
                     <p class="text-sm text-gray-600 mb-4">
-                        Configure a integração com o Melhor Envio para cálculo de frete e gestão de envios.
+                        Configure o serviço Melhor Envio para oferecer frete aos clientes.
                     </p>
-                    <a href="{{ route('admin.settings.melhorenvio') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <a href="{{ route('admin.store-settings.melhorenvio') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         Configurar
                     </a>
                 </div>
@@ -117,31 +117,15 @@
                         </span>
                     </div>
                     <p class="text-sm text-gray-600 mb-4">
-                        Configure a integração com os Correios para cálculo de frete e rastreamento de encomendas.
+                        Configure as opções dos Correios para cálculo de frete e rastreamento.
                     </p>
-                    <a href="{{ route('admin.settings.correios') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <a href="{{ route('admin.store-settings.correios') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         Configurar
                     </a>
                 </div>
             </div>
 
-            <!-- Mercado Envio Card -->
-            <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                <div class="p-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-medium text-gray-900">Mercado Envio</h3>
-                        <span class="px-2 py-1 text-xs font-semibold rounded-full {{ isset($settings['mercadoenvio_enabled']) && $settings['mercadoenvio_enabled'] == 'true' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                            {{ isset($settings['mercadoenvio_enabled']) && $settings['mercadoenvio_enabled'] == 'true' ? 'Ativo' : 'Inativo' }}
-                        </span>
-                    </div>
-                    <p class="text-sm text-gray-600 mb-4">
-                        Configure a integração com o Mercado Envio para envio dos produtos vendidos no Mercado Livre.
-                    </p>
-                    <a href="{{ route('admin.settings.mercadoenvio') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                        Configurar
-                    </a>
-                </div>
-            </div>
+          
         </div>
     </div>
 
@@ -159,7 +143,7 @@
                     <p class="text-sm text-gray-600 mb-4">
                         Configure a autenticação via Google para permitir que usuários façam login com suas contas do Google.
                     </p>
-                    <a href="{{ route('admin.settings.google-oauth') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                    <a href="{{ route('admin.store-settings.google-oauth') }}" class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                         Configurar
                     </a>
                 </div>

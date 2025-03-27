@@ -48,8 +48,8 @@
                     
                     <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
                         <h4 class="font-medium">Importante!</h4>
-                        <p class="text-sm mt-1">Você deve configurar a URL de callback como:</p>
-                        <code class="block mt-1 p-2 bg-gray-100 text-sm rounded">{{ url('/admin/settings/melhorenvio/callback') }}</code>
+                        <p class="mt-2 text-sm text-gray-600">Configure a seguinte URL como callback na sua conta do Melhor Envio:</p>
+                        <code class="block mt-1 p-2 bg-gray-100 text-sm rounded">{{ route('admin.store-settings.melhorenvio.callback') }}</code>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
         <!-- Formulário de configuração -->
         <div class="lg:col-span-2">
             <div class="bg-white shadow-md rounded-lg p-6">
-                <form action="{{ route('admin.settings.melhorenvio.update') }}" method="POST">
+                <form action="{{ route('admin.store-settings.melhorenvio.update') }}" method="POST">
                     @csrf
                     
                     <!-- Seção de API -->
@@ -529,7 +529,7 @@
     // Função para autenticação no Melhor Envio
     function authenticateMelhorEnvio() {
         const clientId = document.getElementById('client_id').value;
-        const redirectUri = "{{ url('/admin/settings/melhorenvio/callback') }}";
+        const redirectUri = "{{ route('admin.store-settings.melhorenvio.callback') }}";
         
         if (!clientId) {
             alert('Por favor, preencha o Client ID antes de autenticar.');

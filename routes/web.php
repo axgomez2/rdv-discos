@@ -19,6 +19,9 @@ use App\Http\Controllers\Site\NavbarController;
 use App\Http\Controllers\Auth\SocialiteController;
 use Laravel\Socialite\Facades\Socialite;
 
+
+
+require __DIR__.'/admin.php';
 // Rotas para o Navbar
 Route::prefix('navbar')->group(function () {
     Route::get('/data', [NavbarController::class, 'getNavbarData']);
@@ -31,7 +34,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 });
 
-require __DIR__.'/admin.php';
+
 // require __DIR__.'/oauth.php'; // Removido para evitar conflitos
 
 Route::middleware(['auth', 'verified', 'rolemanager:resale'])->group(function () {
@@ -171,38 +174,12 @@ Route::get('/auth/google/callback', [App\Http\Controllers\Auth\SocialiteControll
     ->name('web.auth.google.callback')
     ->defaults('provider', 'google');
 
-// Rota de diagnóstico para Google OAuth (desabilitar em produção após testes)
-Route::get('/debug-oauth', function () {
-    $systemSettings = app(\App\Services\SystemSettingsService::class);
-    
-    // Verificar config atual
-    $current_config = config('services.google');
-    
-    // Todas as configurações
-    $settings = [
-        'enabled' => (bool)$systemSettings->get('oauth', 'google_enabled', false),
-        'raw_enabled_value' => $systemSettings->get('oauth', 'google_enabled', 'valor não definido'),
-        'client_id_from_settings' => $systemSettings->get('oauth', 'google_client_id', 'não definido'),
-        'client_id_from_config' => $current_config['client_id'] ?? 'não definido em config',
-        'client_secret_set' => !empty($systemSettings->get('oauth', 'google_client_secret', '')),
-        'redirect_from_settings' => $systemSettings->get('oauth', 'google_redirect', 'não definido'),
-        'redirect_from_config' => $current_config['redirect'] ?? 'não definido em config',
-        'new_auth_url' => url('/login-with-google'),
-        'new_callback_url' => url('/google-callback'),
-        'old_auth_url' => url('/auth/google'),
-        'old_callback_url' => url('/auth/google/callback'),
-        'actual_routes' => [
-            'login.with.google' => route('login.with.google'),
-            'google.callback' => route('google.callback'),
-            'auth.google' => route('auth.google'),
-            'auth.google.callback' => route('auth.google.callback')
-        ]
-    ];
-    
-    return response()->json($settings);
-});
+// Rotas para atualização de tema
+Route::get('/theme', [ThemeController::class, 'index'])->name('theme');
+Route::post('/theme/update', [ThemeController::class, 'update'])->name('theme.update');
 
 require __DIR__.'/auth.php';
 require __DIR__.'/users.php';
 require __DIR__.'/checkout.php';
 require __DIR__.'/cart.php';
+

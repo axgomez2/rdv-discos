@@ -40,7 +40,7 @@
                     <div class="p-6">
                         <div class="flex items-baseline">
                             <span class="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full uppercase font-semibold tracking-wide">
-                                {{ $playlist->quantidadeFaixas() }} faixas
+                                {{ $playlist->trackCount() }} faixas
                             </span>
                         </div>
 

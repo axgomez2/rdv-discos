@@ -10,7 +10,7 @@
                             <div class="rounded-lg border border-gray-200 bg-white p-4 shadow-sm md:p-6">
                                 <div class="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0">
                                     <a href="#" class="shrink-0 md:order-1">
-                                        <img class="h-20 w-20 object-cover" src="{{ $item->product->productable->vinylSec->cover_image ?? asset('images/placeholder.jpg') }}" alt="{{ $item->product->productable->title }}">
+                                        <img class="h-20 w-20 object-cover" src="{{ $item->product->productable->cover_image ?? ($item->product->productable->vinylMaster->cover_image ?? asset('images/placeholder.jpg')) }}" alt="{{ $item->product->productable->title ?? $item->product->name }}">
                                     </a>
 
                                     <label for="counter-input-{{ $item->id }}" class="sr-only">Escolher quantidade:</label>
@@ -105,11 +105,6 @@
                                             </button>
                                         @endif
                                     </dd>
-                                </dl>
-
-                                <dl class="flex items-center justify-between gap-4">
-                                    <dt class="text-base font-normal text-gray-500">Impostos</dt>
-                                    <dd class="text-base font-medium text-gray-900">R$ {{ number_format($tax, 2, ',', '.') }}</dd>
                                 </dl>
                             </div>
 
@@ -232,4 +227,3 @@
     </script>
     @endpush
 </x-app-layout>
-

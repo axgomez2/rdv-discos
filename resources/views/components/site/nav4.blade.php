@@ -731,7 +731,7 @@
           @foreach($cart->items->take(4) as $item)
             <li class="flex py-3 items-center">
               <img
-                  src="{{ $item->product->image ?? asset('placeholder.png') }}"
+                  src="{{ $item->product->productable->cover_image ?? ($item->product->productable->vinylMaster->cover_image ?? asset('images/placeholder.jpg')) }}"
                   class="w-12 h-12 object-cover rounded"
                   alt="{{ $item->product->name }}"
               >
@@ -755,7 +755,7 @@
     @if($cartCount > 0)
       <div class="mt-4">
         <a
-            href="{{ route('site.cart.index') }}"
+            href="{{ route('site.checkout.index') }}"
             class="w-full text-white bg-blue-600 hover:bg-blue-700
                    font-medium rounded-lg text-sm px-5 py-2.5 text-center block"
         >

@@ -635,7 +635,7 @@
                         
                         <p class="text-gray-600 mb-4">Configure o gateway de pagamento PagSeguro para processar pagamentos.</p>
                         
-                        <a href="{{ route('admin.settings.pagseguro') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        <a href="{{ route('admin.store-settings.pagseguro') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Configurar
                         </a>
                     </div>
@@ -664,7 +664,7 @@
                         
                         <p class="text-gray-600 mb-4">Configure o gateway de pagamento MercadoPago para processar pagamentos.</p>
                         
-                        <a href="{{ route('admin.settings.mercadopago') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        <a href="{{ route('admin.store-settings.mercadopago') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Configurar
                         </a>
                     </div>
@@ -691,9 +691,9 @@
                             </span>
                         </div>
                         
-                        <p class="text-gray-600 mb-4">Configure a integração com o Melhor Envio para cálculo de frete e gestão de envios.</p>
+                        <p class="text-gray-600 mb-4">Configure o serviço Melhor Envio para gerenciar entregas e fretes.</p>
                         
-                        <a href="{{ route('admin.settings.melhorenvio') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        <a href="{{ route('admin.store-settings.melhorenvio') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Configurar
                         </a>
                     </div>

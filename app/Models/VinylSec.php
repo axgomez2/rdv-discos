@@ -31,7 +31,8 @@ class VinylSec extends Model
         'promotional_price',
         'is_promotional',
         'in_stock',
-        'cat_style_shop_id'
+        'cat_style_shop_id',
+        'supplier'
     ];
 
     protected $casts = [

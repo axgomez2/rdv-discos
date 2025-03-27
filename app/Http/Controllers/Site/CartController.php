@@ -65,10 +65,10 @@ class CartController extends Controller
             }
         }
 
-        $tax = $subtotal * 0.1; // 10% de imposto
-        $total = $subtotal + $shipping + $tax;
+        // Removendo o cálculo de impostos (taxas)
+        $total = $subtotal + $shipping;
 
-        return view('site.cart.index', compact('cart', 'subtotal', 'shipping', 'tax', 'total', 'shippingOptions', 'address'));
+        return view('site.cart.index', compact('cart', 'subtotal', 'shipping', 'total', 'shippingOptions', 'address'));
     }
 
     public function addToCart(Request $request)

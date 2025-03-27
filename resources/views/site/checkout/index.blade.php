@@ -1,56 +1,52 @@
-@extends('layouts.site')
+<x-app-layout>
 
-@section('title', 'Checkout')
 
-@section('content')
-<div class="container py-5">
-    <h1 class="mb-4">Finalizar Compra</h1>
+
+
+<div class="mx-auto max-w-screen-xl px-4 2xl:px-0 py-8">
+    <h2 class="text-xl font-semibold text-gray-900 sm:text-2xl">Finalizar Compra</h1>
 
     @if(session('error'))
-        <div class="alert alert-danger">
+        <div class="mt-4 p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50">
             {{ session('error') }}
         </div>
     @endif
 
-    <div class="row">
+    <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
         <!-- Resumo do Carrinho -->
-        <div class="col-md-5 order-md-2 mb-4">
-            <h4 class="d-flex justify-content-between align-items-center mb-3">
+        <div class="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full lg:max-w-sm">
+            <h4 class="d-flex justify-content-between align-items-center mb-4">
                 <span>Seu Carrinho</span>
                 <span class="badge badge-secondary badge-pill">{{ $cart->items->count() }}</span>
             </h4>
-            <ul class="list-group mb-3">
+            <ul class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
                 @foreach($cart->items as $item)
-                <li class="list-group-item d-flex justify-content-between lh-condensed">
+                <li class="flex items-center justify-between pt-3 lh-condensed">
                     <div>
                         <h6 class="my-0">{{ $item->product->name }}</h6>
-                        <small class="text-muted">Quantidade: {{ $item->quantity }}</small>
+                        <small class="text-sm text-gray-500">Quantidade: {{ $item->quantity }}</small>
                     </div>
-                    <span class="text-muted">R$ {{ number_format($item->quantity * $item->product->price, 2, ',', '.') }}</span>
+                    <span class="text-sm text-gray-500">R$ {{ number_format($item->quantity * $item->product->price, 2, ',', '.') }}</span>
                 </li>
                 @endforeach
 
-                <li class="list-group-item d-flex justify-content-between">
+                <li class="flex items-center justify-between pt-3">
                     <span>Subtotal</span>
                     <strong>R$ {{ number_format($subtotal, 2, ',', '.') }}</strong>
                 </li>
-                <li class="list-group-item d-flex justify-content-between">
+                <li class="flex items-center justify-between pt-3">
                     <span>Frete</span>
                     <strong class="shipping-cost">R$ {{ number_format($shippingCost, 2, ',', '.') }}</strong>
                 </li>
-                <li class="list-group-item d-flex justify-content-between">
-                    <span>Impostos</span>
-                    <strong>R$ {{ number_format($tax, 2, ',', '.') }}</strong>
-                </li>
-                <li class="list-group-item d-flex justify-content-between bg-light">
-                    <span class="text-success">Total</span>
-                    <strong class="order-total text-success">R$ {{ number_format($total, 2, ',', '.') }}</strong>
+                <li class="flex items-center justify-between border-t border-gray-200 pt-3">
+                    <span class="text-lg font-semibold text-emerald-600">Total</span>
+                    <strong class="order-total text-lg font-semibold text-emerald-600">R$ {{ number_format($total, 2, ',', '.') }}</strong>
                 </li>
             </ul>
         </div>
 
         <!-- Formulário de Checkout -->
-        <div class="col-md-7 order-md-1">
+        <div class="mx-auto w-full flex-none lg:max-w-2xl xl:max-w-3xl">
             <form id="payment-form" action="{{ route('site.checkout.process') }}" method="POST">
                 @csrf
                 <input type="hidden" name="card_token" id="card_token" value="">
@@ -58,37 +54,37 @@
                 <input type="hidden" name="shipping_option" id="shipping_option" value="{{ session('shipping_method') }}">
 
                 <!-- Informações de Entrega -->
-                <h4 class="mb-3">Informações de Entrega</h4>
-                <div class="row">
-                    <div class="col-md-8 mb-3">
+                <h4 class="mb-4">Informações de Entrega</h4>
+                <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                    <div class="col-md-8 mb-4">
                         <label for="endereco">Endereço</label>
-                        <input type="text" class="form-control" id="endereco" name="endereco" required>
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="endereco" name="endereco" required>
                     </div>
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-4 mb-4">
                         <label for="numero">Número</label>
-                        <input type="text" class="form-control" id="numero" name="numero" required>
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="numero" name="numero" required>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                    <div class="col-md-6 mb-4">
                         <label for="complemento">Complemento</label>
-                        <input type="text" class="form-control" id="complemento" name="complemento">
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="complemento" name="complemento">
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6 mb-4">
                         <label for="bairro">Bairro</label>
-                        <input type="text" class="form-control" id="bairro" name="bairro" required>
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="bairro" name="bairro" required>
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                    <div class="col-md-6 mb-4">
                         <label for="cidade">Cidade</label>
-                        <input type="text" class="form-control" id="cidade" name="cidade" required>
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cidade" name="cidade" required>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="col-md-6 mb-4">
                         <label for="estado">Estado</label>
-                        <select class="form-control" id="estado" name="estado" required>
+                        <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="estado" name="estado" required>
                             <option value="">Selecione...</option>
                             <option value="AC">Acre</option>
                             <option value="AL">Alagoas</option>
@@ -121,83 +117,185 @@
                     </div>
                 </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
+                <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                    <div class="col-md-6 mb-4">
                         <label for="cep">CEP</label>
                         <div class="input-group">
-                            <input type="text" class="form-control" id="cep" name="cep" placeholder="00000-000" required>
+                            <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cep" name="cep" placeholder="00000-000" required>
                             <div class="input-group-append">
-                                <button type="button" class="btn btn-secondary" id="calcular-frete">Calcular Frete</button>
+                                <button type="button" class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-4 py-2" id="calcular-frete">Calcular Frete</button>
                             </div>
                         </div>
-                        <small class="text-muted">Digite apenas números</small>
+                        <small class="text-sm text-gray-500">Digite apenas números</small>
                     </div>
                 </div>
 
                 <!-- Opções de Envio -->
                 <div class="mb-4" id="opcoes-frete">
-                    <h5 class="mb-3">Opções de Envio</h5>
-                    <div class="alert alert-info d-none" id="calculando-frete">
+                    <h4 class="mb-4">Opções de Envio</h4>
+                    <div class="mt-4 p-4 mb-4 text-sm text-blue-800 rounded-lg bg-blue-50" id="calculando-frete">
                         <i class="fas fa-spinner fa-spin"></i> Calculando opções de frete...
                     </div>
-                    <div class="alert alert-warning d-none" id="erro-frete">
+                    <div class="mt-4 p-4 mb-4 text-sm text-yellow-800 rounded-lg bg-yellow-50 d-none" id="erro-frete">
                         Não foi possível calcular o frete. Verifique se o CEP está correto.
                     </div>
                     
                     <!-- As opções de frete serão carregadas aqui via JavaScript -->
                     <div id="lista-opcoes-frete" class="d-none">
-                        <!-- Template para opções de frete -->
+                        <!-- As opções de frete serão exibidas aqui -->
                     </div>
                 </div>
 
                 <!-- Método de Pagamento -->
-                <h4 class="mb-3">Método de Pagamento</h4>
-                <div class="d-block my-3">
-                    <div class="form-check">
-                        <input id="credit_card" name="payment_method" type="radio" class="form-check-input" value="credit_card" checked required>
-                        <label class="form-check-label" for="credit_card">Cartão de Crédito</label>
-                    </div>
-                    <div class="form-check">
-                        <input id="boleto" name="payment_method" type="radio" class="form-check-input" value="boleto" required>
-                        <label class="form-check-label" for="boleto">Boleto Bancário</label>
-                    </div>
-                    <div class="form-check">
-                        <input id="pix" name="payment_method" type="radio" class="form-check-input" value="pix" required>
-                        <label class="form-check-label" for="pix">PIX</label>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">Método de Pagamento</h4>
+                
+                <!-- Gateways de Pagamento -->
+                <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6">
+                    <p class="text-lg font-medium text-gray-900">Selecione um método de pagamento</p>
+                    
+                    <!-- Container para gateways e métodos -->
+                    <div class="space-y-6">
+                        @if(isset($paymentGateways['pagseguro']))
+                        <div class="border rounded-lg overflow-hidden" id="pagseguro-gateway">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 cursor-pointer" onclick="toggleGatewayMethods('pagseguro')">
+                                <div class="flex items-center">
+                                    <img src="{{ asset('images/pagseguro-logo.png') }}" alt="PagSeguro" class="h-8 w-auto">
+                                </div>
+                                <div class="gateway-toggle">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="gateway-methods p-4 space-y-3" id="pagseguro-methods">
+                                <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                                    <input id="pagseguro_credit_card" name="payment_method" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300" value="pagseguro_credit_card" data-gateway="pagseguro" data-method="credit_card">
+                                    <label for="pagseguro_credit_card" class="ml-3 flex flex-col cursor-pointer">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">Cartão de Crédito</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500 mt-1">Parcele em até 12x</span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                                    <input id="pagseguro_boleto" name="payment_method" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300" value="pagseguro_boleto" data-gateway="pagseguro" data-method="boleto">
+                                    <label for="pagseguro_boleto" class="ml-3 flex flex-col cursor-pointer">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">Boleto Bancário</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500 mt-1">Vencimento em 3 dias úteis</span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                                    <input id="pagseguro_pix" name="payment_method" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300" value="pagseguro_pix" data-gateway="pagseguro" data-method="pix">
+                                    <label for="pagseguro_pix" class="ml-3 flex flex-col cursor-pointer">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">PIX</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500 mt-1">Pagamento instantâneo</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                        
+                        @if(isset($paymentGateways['mercadopago']))
+                        <div class="border rounded-lg overflow-hidden" id="mercadopago-gateway">
+                            <div class="flex items-center justify-between p-4 bg-gray-50 cursor-pointer" onclick="toggleGatewayMethods('mercadopago')">
+                                <div class="flex items-center">
+                                    <img src="{{ asset('images/mercadopago-logo.png') }}" alt="MercadoPago" class="h-8 w-auto">
+                                </div>
+                                <div class="gateway-toggle">
+                                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="gateway-methods p-4 space-y-3" id="mercadopago-methods">
+                                <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                                    <input id="mercadopago_credit_card" name="payment_method" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300" value="mercadopago_credit_card" data-gateway="mercadopago" data-method="credit_card">
+                                    <label for="mercadopago_credit_card" class="ml-3 flex flex-col cursor-pointer">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">Cartão de Crédito</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500 mt-1">Parcele em até 12x</span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                                    <input id="mercadopago_boleto" name="payment_method" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300" value="mercadopago_boleto" data-gateway="mercadopago" data-method="boleto">
+                                    <label for="mercadopago_boleto" class="ml-3 flex flex-col cursor-pointer">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">Boleto Bancário</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500 mt-1">Vencimento em 3 dias úteis</span>
+                                    </label>
+                                </div>
+                                <div class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+                                    <input id="mercadopago_pix" name="payment_method" type="radio" class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300" value="mercadopago_pix" data-gateway="mercadopago" data-method="pix">
+                                    <label for="mercadopago_pix" class="ml-3 flex flex-col cursor-pointer">
+                                        <div class="flex items-center">
+                                            <svg class="w-5 h-5 mr-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+                                            </svg>
+                                            <span class="font-medium text-gray-900">PIX</span>
+                                        </div>
+                                        <span class="text-sm text-gray-500 mt-1">Pagamento instantâneo</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
+                
+                <input type="hidden" name="payment_gateway" id="payment_gateway" value="">
 
                 <!-- Informações do Cartão (exibido condicionalmente via JavaScript) -->
                 <div id="credit-card-details">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                    <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                        <div class="col-md-6 mb-4">
                             <label for="cc-name">Nome no cartão</label>
-                            <input type="text" class="form-control" id="cc-name" placeholder="">
-                            <small class="text-muted">Nome completo como mostrado no cartão</small>
+                            <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cc-name" placeholder="">
+                            <small class="text-sm text-gray-500">Nome completo como mostrado no cartão</small>
                             <div class="invalid-feedback">
                                 Nome no cartão é obrigatório
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6 mb-4">
                             <label for="cc-cpf">CPF do titular</label>
-                            <input type="text" class="form-control" id="cc-cpf" placeholder="123.456.789-00">
+                            <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cc-cpf" placeholder="123.456.789-00">
                             <div class="invalid-feedback">
                                 CPF é obrigatório
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                    <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                        <div class="col-md-6 mb-4">
                             <label for="cc-birth-date">Data de Nascimento</label>
-                            <input type="date" class="form-control" id="cc-birth-date">
+                            <input type="date" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cc-birth-date">
                             <div class="invalid-feedback">
                                 Data de nascimento é obrigatória
                             </div>
                         </div>
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-6 mb-4">
                             <label for="cc-number">Número do cartão</label>
                             <div class="input-group">
-                                <input type="text" class="form-control" id="cc-number" placeholder="1234 1234 1234 1234" required>
+                                <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cc-number" placeholder="1234 1234 1234 1234" required>
                                 <div class="input-group-append">
                                     <span class="input-group-text">
                                         <i id="card-brand-icon" class="fas fa-credit-card"></i>
@@ -209,10 +307,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
+                    <div class="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                        <div class="col-md-3 mb-4">
                             <label for="cc-expiration-month">Mês</label>
-                            <select class="form-control" id="cc-expiration-month" required>
+                            <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cc-expiration-month" required>
                                 <option value="">Mês</option>
                                 @for ($i = 1; $i <= 12; $i++)
                                     <option value="{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}">{{ str_pad($i, 2, '0', STR_PAD_LEFT) }}</option>
@@ -222,9 +320,9 @@
                                 Mês de expiração obrigatório
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3 mb-4">
                             <label for="cc-expiration-year">Ano</label>
-                            <select class="form-control" id="cc-expiration-year" required>
+                            <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cc-expiration-year" required>
                                 <option value="">Ano</option>
                                 @for ($i = date('Y'); $i <= date('Y') + 15; $i++)
                                     <option value="{{ $i }}">{{ $i }}</option>
@@ -234,16 +332,16 @@
                                 Ano de expiração obrigatório
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3 mb-4">
                             <label for="cc-cvv">CVV</label>
-                            <input type="text" class="form-control" id="cc-cvv" placeholder="123" required>
+                            <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="cc-cvv" placeholder="123" required>
                             <div class="invalid-feedback">
                                 Código de segurança obrigatório
                             </div>
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-3 mb-4">
                             <label for="installments">Parcelas</label>
-                            <select class="form-control" id="installments" name="installments">
+                            <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" id="installments" name="installments">
                                 <option value="1">1x de R$ {{ number_format($total, 2, ',', '.') }}</option>
                                 <!-- As demais parcelas serão preenchidas via JavaScript -->
                             </select>
@@ -258,11 +356,171 @@
 
                 <!-- Botão de Finalizar Compra -->
                 <hr class="mb-4">
-                <button class="btn btn-primary btn-lg btn-block" type="submit" id="checkout-button">Finalizar Compra</button>
+                <button class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center btn-lg btn-block" type="submit" id="checkout-button">Finalizar Compra</button>
             </form>
         </div>
     </div>
 </div>
+
+@push('styles')
+<style>
+    /* Estilos para opções de frete */
+    #lista-opcoes-frete {
+        margin-top: 15px;
+    }
+    
+    .shipping-option {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 15px;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        background-color: #f8f9fa;
+    }
+    
+    .shipping-option:hover {
+        border-color: #adb5bd;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+    
+    .shipping-option.selected {
+        border-color: #28a745;
+        background-color: #f0fff4;
+        box-shadow: 0 3px 10px rgba(40,167,69,0.2);
+    }
+    
+    .shipping-option-logo {
+        width: 60px;
+        margin-right: 15px;
+        text-align: center;
+    }
+    
+    .shipping-option-logo i {
+        font-size: 28px;
+        color: #495057;
+    }
+    
+    .shipping-option-details {
+        flex-gmt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8: 1;
+    }
+    
+    .shipping-option-title {
+        font-weight: 600;
+        margin-bottom: 3px;
+    }
+    
+    .shipping-option-time {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    .shipping-option-price {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #212529;
+        margin-left: 20px;
+        white-space: nowrap;
+    }
+    
+    /* Estilos para métodos de pagamento */
+    .payment-methods-container {
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    
+    .payment-gateway-card {
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .payment-gateway-card:last-child {
+        border-bottom: none;
+    }
+    
+    .gateway-header {
+        padding: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #fff;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .gateway-header:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .gateway-logo {
+        display: flex;
+        align-items: center;
+    }
+    
+    .gateway-methods {
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        background-color: #f8f9fa;
+    }
+    
+    .gateway-methods.expanded {
+        max-height: 500px;
+        padding: 10px 15px;
+    }
+    
+    .gateway-method-option {
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        background-color: #fff;
+        transition: all 0.3s;
+        position: relative;
+    }
+    
+    .gateway-method-option:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .gateway-method-option.selected {
+        background-color: #f0fff4;
+        border: 1px solid #28a745;
+    }
+    
+    .gateway-method-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+    }
+    
+    .method-label {
+        display: flex;
+        align-items: center;
+        margin: 0;
+        cursor: pointer;
+        width: 100%;
+    }
+    
+    .method-icon {
+        margin-right: 15px;
+        font-size: 1.5rem;
+        color: #6c757d;
+        width: 35px;
+        text-align: center;
+    }
+    
+    .method-name {
+        font-weight: 600;
+        margin-right: 15px;
+    }
+    
+    .method-desc {
+        color: #6c757d;
+        margin-left: auto;
+    }
+</style>
+@endpush
 
 @push('scripts')
 <!-- Script do PagSeguro -->
@@ -357,8 +615,7 @@
                         
                         // Atualizar valor total
                         const subtotal = parseFloat('{{ $subtotal }}');
-                        const tax = parseFloat('{{ $tax }}');
-                        const total = subtotal + option.price + tax;
+                        const total = subtotal + option.price;
                         document.querySelector('.order-total').innerText = 'R$ ' + total.toFixed(2).replace('.', ',');
                         
                         // Atualizar o input hidden
@@ -383,7 +640,7 @@
                     label.htmlFor = 'frete_' + key;
                     label.innerHTML = `
                         <strong>${option.name}</strong> - ${option.company} <br>
-                        <span class="text-muted">Entrega em ${option.delivery_time} dia(s) úteis</span>
+                        <span class="text-sm text-gray-500">Entrega em ${option.delivery_time} dia(s) úteis</span>
                         <span class="badge badge-success float-right">R$ ${option.price.toFixed(2).replace('.', ',')}</span>
                     `;
                     
@@ -556,4 +813,4 @@
     });
 </script>
 @endpush
-@endsection
+</x-app-layout>
