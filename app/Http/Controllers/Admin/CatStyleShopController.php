@@ -26,11 +26,22 @@ class CatStyleShopController extends Controller
             'nome' => 'required|max:255|unique:cat_style_shop,nome',
         ]);
 
-        CatStyleShop::create([
+        $category = CatStyleShop::create([
             'nome' => $request->nome,
-            'slug' => Str::slug($request->nome),
+            'slug' => $request->slug ? Str::slug($request->slug) : Str::slug($request->nome),
+            'parent_id' => $request->parent_id ?? null,
         ]);
 
+        // Se a requisição for AJAX, retorna uma resposta JSON
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Categoria criada com sucesso!',
+                'category' => $category
+            ]);
+        }
+
+        // Caso contrário, redireciona normalmente
         return redirect()->route('admin.cat-style-shop.index')->with('success', 'Categoria criada com sucesso!');
     }
 

@@ -542,7 +542,10 @@ class VinylController extends Controller
             $selectedCategories = $vinylMaster->vinylSec ? $vinylMaster->vinylSec->categories->pluck('id')->toArray() : [];
             $tracks = $vinylMaster->tracks;
 
-            return view('admin.vinyls.complete', compact('vinylMaster', 'weights', 'dimensions', 'categories', 'selectedCategories', 'tracks'));
+            // Se já existir um vinylSec, carregamos o supplier existente, caso contrário será null
+            $supplier = $vinylMaster->vinylSec ? $vinylMaster->vinylSec->supplier : null;
+
+            return view('admin.vinyls.complete', compact('vinylMaster', 'weights', 'dimensions', 'categories', 'selectedCategories', 'tracks', 'supplier'));
         } catch (\Exception $e) {
             Log::error('Error loading vinyl completion form: ' . $e->getMessage());
             return redirect()->route('admin.vinyls.index')->with('error', 'Não foi possível carregar o formulário de finalização do vinyl. Por favor, tente novamente.');
@@ -575,6 +578,7 @@ class VinylController extends Controller
             'track_youtube_urls.*' => 'nullable|url',
             'category_ids'         => 'required|array',
             'category_ids.*'       => 'exists:cat_style_shop,id',
+            'supplier'             => 'nullable|string|max:255',
         ]);
 
         DB::beginTransaction();
